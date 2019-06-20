@@ -21,3 +21,33 @@ export const getSalesRecord = info => {
     data: info
   })
 }
+
+export const getPurchaseOrder = () => {
+  return axios.request({
+    url: 'v1/order/get_purchase_order',
+    method: 'get'
+  })
+}
+
+export const getPurchaseRecord = info => {
+  return axios.request({
+    url: 'v1/purchase/list',
+    method: 'get',
+    data: info
+  })
+}
+
+export const getCategoryList = () => {
+  return axios.request({
+    url: 'v1/category/list',
+    method: 'get'
+  })
+}
+
+export const addCategory = info => {
+  return axios.request({
+    url: 'v1/category/create',
+    method: 'post',
+    data: info
+  })
+}

@@ -92,6 +92,46 @@ export default [
     ]
   },
   {
+    path: '/purchase_order',
+    name: '采购订单',
+    component: Main,
+    meta: {
+      title: 'asyncOK',
+      icon: 'ios-book'
+    },
+    children: [
+      {
+        path: '/purchase_order',
+        name: '采购订单',
+        meta: {
+          title: 'asyncOK',
+          icon: 'md-home'
+        },
+        component: () => import('@/view/kong/purchase_order')
+      }
+    ]
+  },
+  {
+    path: '/category',
+    name: '类别管理',
+    component: Main,
+    meta: {
+      title: 'asyncOK',
+      icon: 'ios-book'
+    },
+    children: [
+      {
+        path: '/category_list',
+        name: '类别列表',
+        meta: {
+          title: 'asyncOK',
+          icon: 'md-home'
+        },
+        component: () => import('@/view/kong/category_list')
+      }
+    ]
+  },
+  {
     path: '',
     name: 'doc',
     meta: {

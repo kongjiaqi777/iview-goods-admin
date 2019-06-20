@@ -1,35 +1,35 @@
 <template>
   <div>
      <Card>
-      <tables ref="tables" editable searchable search-place="top" v-model="tableData" :columns="columns"/>
+      <tables ref="purchaseTables" editable searchable search-place="top" v-model="purchaseData" :columns="purchaseOrderColumns"/>
     </Card>
     <Modal
         v-model="showDetail"
         title="订单详情"
         @on-ok="showDetail=false">
-        <tables ref="record_table" v-model="recordData" :columns="recordColumns"/>
+        <tables ref="record_table" v-model="purchaseRecordData" :columns="purchaseRecordColumns"/>
     </Modal>
   </div>
 </template>
 <script>
 import Tables from '_c/tables'
-import { getSalesOrder, getSalesRecord } from '@/api/goods'
+import { getPurchaseOrder, getPurchaseRecord } from '@/api/goods'
 
 export default {
-  name: 'sales_order',
+  name: 'purchase_order',
   components: {
     Tables
   },
   data () {
     return {
-      columns: [
+      purchaseOrderColumns: [
         { title: '订单编号', key: 'order_code', sortable: true },
         { title: '总价', key: 'total_price' },
         { title: '折扣', key: 'discount' },
         { title: '付款方式', key: 'pay_way' },
         { title: '是否付款', key: 'is_pay_off' },
         { title: '已付金额', key: 'pay_number' },
-        { title: '顾客名称', key: 'customer_name' },
+        { title: '供应商名称', key: 'supplier_name' },
         { title: '凭证', key: 'photo' },
         { title: '备注信息', key: 'comment' },
         {
@@ -50,7 +50,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.getSalesRecordItem(params.row.order_code)
+                      this.getpurchaseRecordItem(params.row.order_code)
                       this.showDetail = true
                     }
                   }
@@ -60,33 +60,33 @@ export default {
           ]
         }
       ],
-      tableData: [],
-      recordColumns: [
+      purchaseData: [],
+      purchaseRecordColumns: [
         { title: '货物编号', key: 'goods_id' },
         { title: '货物名称', key: 'goods_name' },
-        { title: '销售订单', key: 'sales_order_code', width: 100 },
-        { title: '销售数量', key: 'num' },
-        { title: '销售价格', key: 'sales_price' },
-        { title: '销售日期', key: 'sales_date' },
-        { title: '顾客名称', key: 'customer_name' },
+        { title: '采购订单', key: 'purchase_order_code', width: 100 },
+        { title: '采购数量', key: 'num' },
+        { title: '采购价格', key: 'charge_price' },
+        { title: '采购日期', key: 'supplier_date' },
+        { title: '供应商名称', key: 'supplier_name' },
         { title: '备注信息', key: 'comment' }
       ],
-      recordData: [],
+      purchaseRecordData: [],
       showDetail: false,
       asyncOK: false
     }
   },
   mounted () {
-    getSalesOrder().then(res => {
-      this.tableData = res.data.info
+    getPurchaseOrder().then(res => {
+      this.purchaseData = res.data.info
     }).catch(err => {
       console.log(err)
     })
   },
   methods: {
-    getSalesRecordItem: function (order_code) {
-      getSalesRecord({ 'sales_order_code': order_code }).then(res => {
-        this.recordData = res.data.info
+    getpurchaseRecordItem: function (order_code) {
+      getPurchaseRecord({ 'purchase_order_code': order_code }).then(res => {
+        this.purchaseRecordData = res.data.info
       }).catch(err => {
         console.log(err)
       })
