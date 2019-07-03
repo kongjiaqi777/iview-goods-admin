@@ -8,17 +8,17 @@
         v-model="showDetail"
         :title="modelTitle"
         @on-ok="showDetail=false">
-        <i-form ref="categoryForm" :model="addCategoryForm" :rules="addCategoryRule" inline>
-            <Form-item prop="type_name">
-                <i-input type="text" v-model="addCategoryForm.type_name" placeholder="请输入类别名称">
+        <i-form ref="customerForm" :model="addCustomerForm" :rules="addCustomerRule" inline>
+            <Form-item prop="name">
+                <i-input type="text" v-model="addCustomerForm.name" placeholder="请输入名称">
                 </i-input>
             </Form-item>
             <Form-item prop="comment">
-                <i-input type="text" v-model="addCategoryForm.comment" placeholder="备注信息">
+                <i-input type="text" v-model="addCustomerForm.comment" placeholder="备注信息">
                 </i-input>
             </Form-item>
             <Form-item>
-                <i-button type="primary" @click="AddCategorySubmit">添加</i-button>
+                <i-button type="primary" @click="AddCustomerSubmit">添加</i-button>
             </Form-item>
         </i-form>
     </Modal>
@@ -26,10 +26,10 @@
 </template>
 <script>
 import Tables from '_c/tables'
-import { getCategoryList, addCategory } from '@/api/goods'
+import {  } from '@/api/goods'
 
 export default {
-  name: 'category_list',
+  name: 'customer_list',
   components: {
     Tables
   },
@@ -37,8 +37,8 @@ export default {
     return {
       categoryColumns: [
         { title: '编号', key: 'id', sortable: true },
-        { title: '类别名称', key: 'type_name' },
-        { title: '备注信息', key: 'comment' },
+        { title: '用户姓名', key: 'type_name' },
+        { title: '类别', key: 'comment' },
         {
           title: '操作',
           key: 'handle',
@@ -57,8 +57,6 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.modelTitle = '修改商品类别'
-                      this.showDetail = true
                     }
                   }
                 }, '修改')
@@ -86,19 +84,18 @@ export default {
     }
   },
   mounted () {
-    this.getCategoryListData()
+    this.getCustomerListData()
   },
   methods: {
-    getCategoryListData () {
+    getCustomerListData () {
       getCategoryList().then(res => {
         this.categoryData = res.data.info
       }).catch(err => {
         console.log(err)
       })
     },
-    AddCategorySubmit () {
-      console.log(this.addCategoryForm)
-      this.$refs.categoryForm.validate((valid) => {
+    AddCustomerSubmit () {
+      this.$refs.customerForm.validate((valid) => {
         if (valid) {
           addCategory(this.addCategoryForm).then(res => {
             if (res.data.code === 0) {

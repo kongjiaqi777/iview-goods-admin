@@ -1,5 +1,6 @@
 import axios from '@/libs/api.request'
 
+// 商品列表
 export const getGoodsInfo = () => {
   return axios.request({
     url: 'v1/goods/list',
@@ -7,6 +8,7 @@ export const getGoodsInfo = () => {
   })
 }
 
+// 销售订单列表
 export const getSalesOrder = () => {
   return axios.request({
     url: 'v1/order/get_sales_order',
@@ -14,6 +16,7 @@ export const getSalesOrder = () => {
   })
 }
 
+// 销售订单记录
 export const getSalesRecord = info => {
   return axios.request({
     url: 'v1/sales/get_sales_record',
@@ -22,6 +25,7 @@ export const getSalesRecord = info => {
   })
 }
 
+// 购买订单列表
 export const getPurchaseOrder = () => {
   return axios.request({
     url: 'v1/order/get_purchase_order',
@@ -29,6 +33,7 @@ export const getPurchaseOrder = () => {
   })
 }
 
+// 购买记录
 export const getPurchaseRecord = info => {
   return axios.request({
     url: 'v1/purchase/list',
@@ -37,6 +42,7 @@ export const getPurchaseRecord = info => {
   })
 }
 
+// 类别列表
 export const getCategoryList = () => {
   return axios.request({
     url: 'v1/category/list',
@@ -44,6 +50,7 @@ export const getCategoryList = () => {
   })
 }
 
+// 添加列表
 export const addCategory = info => {
   return axios.request({
     url: 'v1/category/create',
@@ -51,3 +58,13 @@ export const addCategory = info => {
     data: info
   })
 }
+
+// 修改类别
+export const modifyCategory = info => {
+  return axios.request({
+    url: 'v1/category/edit',
+    method: 'post',
+    data: info
+  })
+}
+// 顾客列表
