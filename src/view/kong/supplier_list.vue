@@ -2,52 +2,46 @@
   <div>
      <Card>
       <i-button type="primary" @click="showDetail=true">添加</i-button>
-      <tables ref="tables" editable searchable search-place="top" v-model="customerData" :columns="customerColumns"/>
+      <tables ref="tables" editable searchable search-place="top" v-model="supplierData" :columns="supplierColumns"/>
     </Card>
     <!-- <Modal
-      v-model="showDetail"
-      :title="modelTitle"
-      @on-ok="showDetail=false">
-      <i-form ref="customerForm" :model="addCustomerForm" :rules="addCustomerRule" inline>
-        <Form-item prop="phone">
-          <i-input type="text" v-model="addCustomerForm.phone" placeholder="请输入名称">
-          </i-input>
-        </Form-item>
-        <Form-item prop="name">
-          <i-input type="text" v-model="addCustomerForm.name" placeholder="请输入名称">
-          </i-input>
-        </Form-item>
-        <Form-item prop="comment">
-          <i-input type="text" v-model="addCustomerForm.comment" placeholder="备注信息">
-          </i-input>
-        </Form-item>
-        <Form-item>
-          <i-button type="primary" @click="AddCustomerSubmit">添加</i-button>
-        </Form-item>
-      </i-form>
+        v-model="showDetail"
+        :title="modelTitle"
+        @on-ok="showDetail=false">
+        <i-form ref="customerForm" :model="addCustomerForm" :rules="addCustomerRule" inline>
+            <Form-item prop="name">
+                <i-input type="text" v-model="addCustomerForm.name" placeholder="请输入名称">
+                </i-input>
+            </Form-item>
+            <Form-item prop="comment">
+                <i-input type="text" v-model="addCustomerForm.comment" placeholder="备注信息">
+                </i-input>
+            </Form-item>
+            <Form-item>
+                <i-button type="primary" @click="AddCustomerSubmit">添加</i-button>
+            </Form-item>
+        </i-form>
     </Modal> -->
   </div>
 </template>
 <script>
 import Tables from '_c/tables'
-import { getCustomerInfo, addCustomerInfo } from '@/api/customer'
+import { getSupplierList } from '@/api/supplier'
 
 export default {
-  name: 'customer_list',
+  name: 'supplier_list',
   components: {
     Tables
   },
   data () {
     return {
-      customerColumns: [
+      supplierColumns: [
         { title: '编号', key: 'id', sortable: true },
         { title: '类型', key: 'type' },
         { title: '用户姓名', key: 'name' },
         { title: '联系方式', key: 'phone' },
         { title: '微信', key: 'wechat' },
         { title: '通信地址', key: 'address' },
-        { title: '车型', key: 'car_type' },
-        { title: '车牌号', key: 'car_number' },
         { title: '联系人', key: 'contact_name' },
         { title: '银行账户', key: 'bank_account' },
         { title: '欠款', key: 'debt' },
@@ -81,25 +75,21 @@ export default {
         }
       ],
       // 参数
-      customerData: [],
-      addcustomerForm: {
-        phone: '',
-        name: '',
+      supplierData: [],
+      addCategoryForm: {
+        type_name: '',
         comment: ''
       },
-      addCustomerRule: {
-        phone: [
-          { required: true, message: '请选择类别' }
-        ],
-        name: [
-          { required: true, message: '请填写名称', trigger: 'blur' }
+      addCategoryRule: {
+        type_name: [
+          { required: true, message: '请填写类别名称', trigger: 'blur' }
         ],
         comment: [
           { type: 'string', max: 20, message: '长度不能大于20位', trigger: 'blur' }
         ]
       },
       showDetail: false,
-      modelTitle: '添加新客户'
+      modelTitle: '添加新商品类别'
     }
   },
   mounted () {
@@ -107,8 +97,8 @@ export default {
   },
   methods: {
     getCustomerListData () {
-      getCustomerInfo().then(res => {
-        this.customerData = res.data.info
+      getSupplierList().then(res => {
+        this.supplierData = res.data.info.list
       }).catch(err => {
         console.log(err)
       })
@@ -116,12 +106,12 @@ export default {
     AddCustomerSubmit () {
       this.$refs.customerForm.validate((valid) => {
         if (valid) {
-          addCustomerInfo(this.addCustomerForm).then(res => {
+          addCategory(this.addCategoryForm).then(res => {
             if (res.data.code === 0) {
               this.$Message.success('添加成功!')
               // 清理form数据
               this.showDetail = false
-              this.getCustomerListData()
+              this.getCategoryListData()
             } else {
               this.$Message.success('添加失败请重试!')
             }
@@ -134,7 +124,8 @@ export default {
         }
       })
     },
-    ModifyCustomerSubmit () {
+    ModifyCategorySubmit () {
+
     }
   }
 }

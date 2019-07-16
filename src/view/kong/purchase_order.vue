@@ -13,7 +13,7 @@
 </template>
 <script>
 import Tables from '_c/tables'
-import { getPurchaseOrder, getPurchaseRecord } from '@/api/goods'
+import { getPurchaseOrder, getPurchaseRecord } from '@/api/order'
 
 export default {
   name: 'purchase_order',
@@ -86,6 +86,7 @@ export default {
   methods: {
     getpurchaseRecordItem: function (order_code) {
       getPurchaseRecord({ 'purchase_order_code': order_code }).then(res => {
+        console.log(order_code)
         this.purchaseRecordData = res.data.info
       }).catch(err => {
         console.log(err)

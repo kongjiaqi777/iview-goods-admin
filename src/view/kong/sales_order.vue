@@ -1,7 +1,7 @@
 <template>
   <div>
      <Card>
-      <tables ref="tables" editable searchable search-place="top" v-model="tableData" :columns="columns"/>
+      <tables ref="tables" editable v-model="tableData" :columns="columns"/>
     </Card>
     <Modal
         v-model="showDetail"
@@ -13,7 +13,7 @@
 </template>
 <script>
 import Tables from '_c/tables'
-import { getSalesOrder, getSalesRecord } from '@/api/goods'
+import { getSalesOrder, getSalesRecord } from '@/api/order'
 
 export default {
   name: 'sales_order',
@@ -54,7 +54,7 @@ export default {
                       this.showDetail = true
                     }
                   }
-                }, '查看原因')
+                }, '查看详情')
               ])
             }
           ]
