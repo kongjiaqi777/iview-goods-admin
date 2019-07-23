@@ -8,12 +8,12 @@
         v-model="showDetail"
         :title="modelTitle"
         @on-ok="showDetail=false">
-        <i-form ref="categoryForm" :model="addCategoryForm" :rules="addCategoryRule" inline>
-            <Form-item prop="type_name">
+        <i-form ref="categoryForm" :model="addCategoryForm" :rules="addCategoryRule">
+            <Form-item prop="type_name" label="类别">
                 <i-input type="text" v-model="addCategoryForm.type_name" placeholder="请输入类别名称">
                 </i-input>
             </Form-item>
-            <Form-item prop="comment">
+            <Form-item prop="comment" label="备注信息">
                 <i-input type="text" v-model="addCategoryForm.comment" placeholder="备注信息">
                 </i-input>
             </Form-item>
@@ -41,30 +41,12 @@ export default {
         { title: '备注信息', key: 'comment' },
         {
           title: '操作',
-          key: 'handle',
-          options: ['修改'],
-          button: [
-            (h, params, vm) => {
-              return h('div', [
-                h('Button', {
-                  props: {
-                    type: 'primary'
-                  },
-                  style: {
-                    width: '50%',
-                    display: 'flex',
-                    'justify-content': 'center'
-                  },
-                  on: {
-                    click: () => {
-                      this.modelTitle = '修改商品类别'
-                      this.showDetail = true
-                    }
-                  }
-                }, '修改')
-              ])
-            }
-          ]
+          key: 'action',
+          width: 150,
+          align: 'center',
+          render (row, column, index) {
+            return `<i-button type="primary" size="small" @click="exit(${row.id})">编辑</i-button>`
+          }
         }
       ],
       // 参数
@@ -82,7 +64,7 @@ export default {
         ]
       },
       showDetail: false,
-      modelTitle: '添加新商品类别',
+      modelTitle: '添加新商品类别'
     }
   },
   mounted () {
@@ -120,6 +102,10 @@ export default {
     },
     ModifyCategorySubmit () {
 
+    },
+    exit (index) {
+      this.modelTitle = '修改商品类别'
+      this.showDetail = true
     }
   }
 }
