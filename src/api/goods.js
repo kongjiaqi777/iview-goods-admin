@@ -48,7 +48,7 @@ export const addCategory = (info) => {
 // 修改类别
 export const modifyCategory = (info) => {
   return axios.request({
-    url: 'v1/category/edit',
+    url: 'v1/category/update',
     method: 'post',
     data: info
   })

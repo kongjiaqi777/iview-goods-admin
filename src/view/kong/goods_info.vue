@@ -43,9 +43,9 @@
           <i-input type="text" v-model="addGoodsForm.comment" placeholder="请输入备注信息">
           </i-input>
         </Form-item>
-        <Form-item>
+        <!-- <Form-item>
           <i-button type="primary" @click="goodsSubmit" v-show="false">确定</i-button>
-        </Form-item>
+        </Form-item> -->
         </i-form>
     </Modal>
   </div>
