@@ -17,33 +17,40 @@
             <i-option v-for="item in customerData" :key="item.id" :value="item.name" :label="item.name"></i-option>
           </i-select>
         </From-item>
-
         <Form-item label="总价">
-          <i-input label=""></i-input>
+          <i-input type="input" v-model="addSalesOrderForm.total_price"></i-input>
         </Form-item>
-
         <Form-item label="折扣金额">
-
+          <i-input type="input" v-model="addSalesOrderForm.discount"></i-input>
         </Form-item>
-
         <Form-item label="付款方式">
-
+          <Radio-group v-model="addSalesOrderForm.pay_way">
+            <Radio value="1" label="现金"></Radio>
+            <Radio value="2" label="微信"></Radio>
+            <Radio value="3" label="支付宝"></Radio>
+            <Radio value="4" label="银行卡"></Radio>
+          </Radio-group>
         </Form-item>
 
         <Form-item label="是否付款">
-
+          <Radio-group v-model="addSalesOrderForm.is_pay_off">
+            <Radio value="1" label="已付款"></Radio>
+            <Radio value="2" label="欠款"></Radio>
+            <Radio value="3" label="部分付款"></Radio>
+            <Radio value="4" label="付款结余"></Radio>
+          </Radio-group>
         </Form-item>
 
         <Form-item label="已付金额">
-
+          <i-input type="input" v-model="addSalesOrderForm.pay_number"></i-input>
         </Form-item>
 
         <Form-item label="凭证">
-
+          <i-input type="input" v-model="addSalesOrderForm.photo"></i-input>
         </Form-item>
 
         <Form-item label="备注信息">
-
+          <i-input type="input" v-model=""></i-input>
         </Form-item>
 
       </i-form>

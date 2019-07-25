@@ -41,6 +41,7 @@ Vue.prototype.$config = config
  */
 importDirective(Vue)
 Vue.directive('clickOutside', clickOutside)
+import 'lib-flexible/flexible'
 
 /* eslint-disable no-new */
 new Vue({

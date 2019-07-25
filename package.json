@@ -45,8 +45,10 @@
     "eslint-plugin-cypress": "^2.0.1",
     "less": "^2.7.3",
     "less-loader": "^4.0.5",
+    "lib-flexible": "^0.3.2",
     "lint-staged": "^6.0.0",
     "mockjs": "^1.0.1-beta3",
+    "px2rem-loader": "^0.1.9",
     "vue-template-compiler": "^2.5.13"
   },
   "browserslist": [
