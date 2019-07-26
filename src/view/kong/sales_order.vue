@@ -50,7 +50,7 @@
         </Form-item>
 
         <Form-item label="备注信息">
-          <i-input type="input" v-model=""></i-input>
+          <i-input type="input" v-model="addSalesOrderForm.comment"></i-input>
         </Form-item>
 
       </i-form>
