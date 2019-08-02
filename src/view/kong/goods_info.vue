@@ -1,10 +1,10 @@
 <template>
   <div>
     <Card>
-      <i-button @click="showDetail=true" type="primary" size="large">添加商品</i-button>
+      <i-button @click="showDetail=true, this.modelType=1, this.modelTitle='添加商品'" type="primary" size="large">添加商品</i-button>
       <tables ref="tables" editable searchable search-place="top" v-model="tableData" :columns="columns"/>
     </Card>
-    <Modal v-model="showDetail" :title="modelTitle" @on-ok="goodsSubmit">
+    <Modal v-model="showDetail" :title="modelTitle" @on-ok="goodsSubmit" @on-cancel="clearFormData">
       <i-form ref="goodsForm" :model="addGoodsForm" :rules="addGoodsRule" :label-width="80">
         <Form-item prop="name" label="商品名称">
           <i-input type="text" v-model="addGoodsForm.name" placeholder="请输入商品名称">
@@ -53,7 +53,7 @@
 
 <script>
 import Tables from '_c/tables'
-import { getGoodsInfo, addGoodsInfo, getCategoryList } from '@/api/goods'
+import { getGoodsInfo, addGoodsInfo, getCategoryList, modifyGoodsInfo } from '@/api/goods'
 
 export default {
   name: 'goods_info',
@@ -72,7 +72,44 @@ export default {
         { title: '适用车型', key: 'car_type' },
         { title: '存放位置', key: 'location' },
         { title: '备注信息', key: 'comment' },
-        { title: '操作', key: 'id' }
+        {
+          title: '操作',
+          key: 'handle',
+          options: ['修改'],
+          button: [
+            (h, params, vm) => {
+              return h('div', [
+                h('Button', {
+                  props: {
+                    type: 'primary'
+                  },
+                  style: {
+                    width: '20%',
+                    display: 'flex',
+                    'justify-content': 'center'
+                  },
+                  on: {
+                    click: () => {
+                      this.showDetail = true
+                      this.modelType = 2
+                      this.modelTitle = '修改商品信息'
+                      this.addGoodsForm.name = params.row.name
+                      this.addGoodsForm.model = params.row.model
+                      this.addGoodsForm.category_id = params.row.category_id
+                      this.addGoodsForm.num = params.row.num
+                      this.addGoodsForm.sale_price = params.row.sale_price
+                      this.addGoodsForm.brand = params.row.brand
+                      this.addGoodsForm.car_type = params.row.car_type
+                      this.addGoodsForm.location = params.row.location
+                      this.addGoodsForm.comment = params.row.comment
+                      this.addGoodsForm.id = params.row.id
+                    }
+                  }
+                }, '修改')
+              ])
+            }
+          ]
+        }
       ],
       tableData: [], // 商品表数据
       modelTitle: '添加商品', // 标题
@@ -86,7 +123,8 @@ export default {
         brand: '',
         car_type: '',
         location: '',
-        comment: ''
+        comment: '',
+        id: 0
       },
       addGoodsRule: { // 添加validate
         name: [
@@ -96,14 +134,15 @@ export default {
           { required: true, message: '请选择类别' }
         ],
         num: [
-          { required: true, message: '请填写库存数量', trigger: 'blur' }
+          { type: 'number', message: '请填写库存数量', trigger: 'blur' }
         ],
         sale_price: [
-          { required: true, message: '请填写建议零售价', trigger: 'blur' }
+          { type: 'number', message: '请填写建议零售价', trigger: 'blur' }
         ]
       },
       categoryItem: { // 类别列表
-      }
+      },
+      modelType: 1 // 对话框类别 1添加 2更新
     }
   },
   mounted () {
@@ -126,25 +165,51 @@ export default {
       })
     },
     goodsSubmit () { // 添加商品
+      console.log(this.addGoodsForm)
       this.$refs.goodsForm.validate((valid) => {
         if (valid) {
-          addGoodsInfo(this.addGoodsForm).then(res => {
-            if (res.data.code === 0) {
-              this.$Message.success('添加成功!')
-              // 清理form数据
-              this.showDetail = false
-              this.getGoodsListData()
-            } else {
+          if (this.modelType === 1) {
+            addGoodsInfo(this.addGoodsForm).then(res => {
+              if (res.data.code === 0) {
+                this.$Message.success('添加成功!')
+                // 清理form数据
+                this.showDetail = false
+                this.getGoodsListData()
+              } else {
+                this.$Message.success('添加失败请重试!')
+              }
+            }).catch(err => {
+              console.log(err)
               this.$Message.success('添加失败请重试!')
-            }
-          }).catch(err => {
-            console.log(err)
-            this.$Message.success('添加失败请重试!')
-          })
+            })
+          } else if (this.modelType === 2) {
+            modifyGoodsInfo(this.addGoodsForm).then(res => {
+              if (res.data.code === 0) {
+                this.$Message.success('修改成功!')
+                // 清理form数据
+                this.showDetail = false
+                this.getGoodsListData()
+              } else {
+                this.$Message.success('修改失败请重试!')
+              }
+            })
+          }
         } else {
           this.$Message.error('表单验证失败!')
         }
       })
+    },
+    clearFormData () {
+      this.addGoodsForm.name = ''
+      this.addGoodsForm.model = ''
+      this.addGoodsForm.category_id = 0
+      this.addGoodsForm.num = ''
+      this.addGoodsForm.sale_price = ''
+      this.addGoodsForm.brand = ''
+      this.addGoodsForm.car_type = ''
+      this.addGoodsForm.location = ''
+      this.addGoodsForm.comment = ''
+      this.addGoodsForm.id = 0
     }
   }
 }

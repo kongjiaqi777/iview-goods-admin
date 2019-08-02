@@ -6,7 +6,7 @@
     <Modal
         v-model="showDetail"
         title="订单详情"
-        @on-ok="showDetail=false">
+        @on-ok="showDetail=false" width="800">
         <tables ref="record_table" v-model="purchaseRecordData" :columns="purchaseRecordColumns"/>
     </Modal>
   </div>
