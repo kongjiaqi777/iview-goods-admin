@@ -10,7 +10,7 @@
         @on-ok="showDetail=false" width="800">
         <tables ref="record_table" v-model="recordData" :columns="recordColumns"/>
     </Modal>
-    <Modal v-modal="modalShow" title="添加订单" @on-ok="addSalesOrder" @on-cancel="clearOrderForm">
+    <Modal v-model="modalShow" title="添加订单" @on-ok="addSalesOrder" @on-cancel="clearOrderForm">
       <i-form ref="addSalesOrder" :model="addSalesOrderForm" :rules="addSalesOrderRules">
         <From-item label="客户信息" prop="customer_id">
           <i-select v-model="addSalesOrderForm.customer_id" placeholder="请选择客户">
@@ -55,7 +55,7 @@
 
       </i-form>
 
-      <i-form>
+      <i-form v-model="saleRecord">
         <table cellspacing="0" cellpadding="0" border="0" style="width: 320px;">
             <thead>
               <tr>
