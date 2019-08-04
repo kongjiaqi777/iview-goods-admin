@@ -12,7 +12,7 @@ export const getSalesOrder = (data) => {
 // 销售订单记录
 export const getSalesRecord = (data) => {
   return axios.request({
-    url: 'v1/sales/get_sales_record',
+    url: 'v1/sales/list',
     method: 'get',
     params: data
   })
@@ -30,8 +30,17 @@ export const getPurchaseOrder = (data) => {
 // 购买记录
 export const getPurchaseRecord = (data) => {
   return axios.request({
-    url: 'v1/purchase/get_purshase_record',
+    url: 'v1/purchase/list',
     method: 'get',
     params: data
+  })
+}
+
+// 添加销售订单
+export const addSalesOrder = (info) => {
+  return axios.request({
+    url: 'v1/order/add_sales_order',
+    method: 'post',
+    data: info
   })
 }

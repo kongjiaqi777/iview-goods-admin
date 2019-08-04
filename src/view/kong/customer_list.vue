@@ -72,6 +72,12 @@ export default {
                   },
                   on: {
                     click: () => {
+                      this.showDetail = true
+                      this.modelType = 2
+                      this.modelTitle = '修改商品类别'
+                      this.addCategoryForm.type_name = params.row.type_name
+                      this.addCategoryForm.comment = params.row.comment
+                      this.addCategoryForm.id = params.row.id
                     }
                   }
                 }, '修改')
@@ -108,7 +114,7 @@ export default {
   methods: {
     getCustomerListData () {
       getCustomerInfo().then(res => {
-        this.customerData = res.data.info
+        this.customerData = res.data.info.list
       }).catch(err => {
         console.log(err)
       })

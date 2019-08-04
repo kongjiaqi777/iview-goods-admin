@@ -82,12 +82,21 @@ export default [
     children: [
       {
         path: '/sales_order',
-        name: '销售订单',
+        name: '订单列表',
         meta: {
           title: 'asyncOK',
           icon: 'md-home'
         },
         component: () => import('@/view/kong/sales_order')
+      },
+      {
+        path: '/add_sales_order',
+        name: '添加订单',
+        meta: {
+          title: 'asyncOK',
+          icon: 'md-home'
+        },
+        component: () => import('@/view/kong/add_sales_order')
       }
     ]
   },

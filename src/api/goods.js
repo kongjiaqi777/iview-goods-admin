@@ -9,6 +9,24 @@ export const getGoodsInfo = (data) => {
   })
 }
 
+// 添加商品
+export const addGoodsInfo = (info) => {
+  return axios.request({
+    url: 'v1/goods/create',
+    method: 'post',
+    data: info
+  })
+}
+
+// 修改商品信息
+export const modifyGoodsInfo = (info) => {
+  return axios.request({
+    url: 'v1/goods/update',
+    method: 'post',
+    data: info
+  })
+}
+
 // 类别列表
 export const getCategoryList = (data) => {
   return axios.request({
@@ -30,7 +48,7 @@ export const addCategory = (info) => {
 // 修改类别
 export const modifyCategory = (info) => {
   return axios.request({
-    url: 'v1/category/edit',
+    url: 'v1/category/update',
     method: 'post',
     data: info
   })

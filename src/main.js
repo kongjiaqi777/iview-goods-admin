@@ -36,11 +36,23 @@ Vue.config.productionTip = false
  * @description 全局注册应用配置
  */
 Vue.prototype.$config = config
+
+Vue.prototype.moneyFormatterInput = function (money){
+  let moneyInt = parseInt(money)
+  return moneyInt * 100
+}
+
+Vue.prototype.montyFormatterOutput = function (money){
+  let moneyInt = parseInt(money)
+  return (moneyInt / 100).toFixed(2)
+}
+
 /**
  * 注册指令
  */
 importDirective(Vue)
 Vue.directive('clickOutside', clickOutside)
+import 'lib-flexible/flexible'
 
 /* eslint-disable no-new */
 new Vue({
