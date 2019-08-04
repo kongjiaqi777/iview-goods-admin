@@ -26,7 +26,7 @@
 </template>
 <script>
 import Tables from '_c/tables'
-import { getCategoryList, addCategory } from '@/api/goods'
+import { getCategoryList, addCategory, modifyCategory } from '@/api/goods'
 
 export default {
   name: 'category_list',
@@ -59,6 +59,9 @@ export default {
                     click: () => {
                       this.modelTitle = '修改商品类别'
                       this.showDetail = true
+                      this.addCategoryForm.type_name = params.row.type_name
+                      this.addCategoryForm.comment = params.row.comment
+                      this.addCategoryForm.id = params.row.id
                     }
                   }
                 }, '修改')
@@ -71,7 +74,8 @@ export default {
       categoryData: [],
       addCategoryForm: {
         type_name: '',
-        comment: ''
+        comment: '',
+        id: 0
       },
       addCategoryRule: {
         type_name: [
@@ -82,7 +86,7 @@ export default {
         ]
       },
       showDetail: false,
-      modelTitle: '添加新商品类别',
+      modelTitle: '添加新商品类别'
     }
   },
   mounted () {
@@ -119,7 +123,26 @@ export default {
       })
     },
     ModifyCategorySubmit () {
-
+      console.log(this.addCategoryForm)
+      this.$refs.categoryForm.validate((valid) => {
+        if (valid) {
+          modifyCategory(this.addCategoryForm).then(res => {
+            if (res.data.code === 0) {
+              this.$Message.success('添加成功!')
+              // 清理form数据
+              this.showDetail = false
+              this.getCategoryListData()
+            } else {
+              this.$Message.success('添加失败请重试!')
+            }
+          }).catch(err => {
+            console.log(err)
+            this.$Message.success('添加失败请重试!')
+          })
+        } else {
+          this.$Message.error('表单验证失败!')
+        }
+      })
     }
   }
 }

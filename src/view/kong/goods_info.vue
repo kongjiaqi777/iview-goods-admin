@@ -33,7 +33,7 @@ export default {
   },
   mounted () {
     getGoodsInfo().then(res => {
-      this.tableData = res.data.info
+      this.tableData = res.data.info.list
     }).catch(err => {
       console.log(err)
     })

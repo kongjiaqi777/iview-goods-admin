@@ -17,10 +17,8 @@ export default {
    * @description api请求基础路径
    */
   baseUrl: {
-    dev: 'homestead.test/', // v1/goods/listhttp://www.goods.com:8089/',
-    // 'https://www.easy-mock.com/mock/5add9213ce4d0e69998a6f51/iview-admin/',
-    pro: 'http://www.goods.com:8089/'
-    // 'https://produce.com'
+    dev: 'homestead.test/',
+    pro: 'homestead.test/'
   },
   /**
    * @description 默认打开的首页的路由name值，默认为home
