@@ -125,7 +125,8 @@ export default {
         { title: '备注信息', key: 'comment' }
       ],
       // 记录数据
-      recordData: []
+      recordData: [],
+      showDetail: false
     }
   },
   mounted () {

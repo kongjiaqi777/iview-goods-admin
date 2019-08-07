@@ -44,3 +44,12 @@ export const addSalesOrder = (info) => {
     data: info
   })
 }
+
+// 添加销售订单
+export const addPurchaseOrder = (info) => {
+  return axios.request({
+    url: 'v1/order/add_purchase_order',
+    method: 'post',
+    data: info
+  })
+}

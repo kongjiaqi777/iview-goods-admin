@@ -18,7 +18,7 @@ export default {
    */
   baseUrl: {
     dev: 'homestead.test/',
-    pro: 'homestead.test/'
+    pro: 'www.kongry.top'
   },
   /**
    * @description 默认打开的首页的路由name值，默认为home
