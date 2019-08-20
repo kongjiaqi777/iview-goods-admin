@@ -1,3 +1,4 @@
+
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
@@ -36,16 +37,6 @@ Vue.config.productionTip = false
  * @description 全局注册应用配置
  */
 Vue.prototype.$config = config
-
-Vue.prototype.moneyFormatterInput = function (money){
-  let moneyInt = parseInt(money)
-  return moneyInt * 100
-}
-
-Vue.prototype.montyFormatterOutput = function (money){
-  let moneyInt = parseInt(money)
-  return (moneyInt / 100).toFixed(2)
-}
 
 /**
  * 注册指令

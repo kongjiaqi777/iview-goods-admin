@@ -1,3 +1,11 @@
+<!--
+ * @Descripttion: 
+ * @version: 
+ * @Author: sueRimn
+ * @Date: 2019-08-05 10:26:11
+ * @LastEditors: sueRimn
+ * @LastEditTime: 2019-08-19 16:08:03
+ -->
 <template>
   <div>
     <Card>
@@ -51,7 +59,7 @@
 <script>
 // import Tables from '_c/tables'
 import { getGoodsInfo, addGoodsInfo, getCategoryList, modifyGoodsInfo } from '@/api/goods'
-// import * as util from '@/utils/util'
+import * as util from '@/utils/util'
 // import { uptime } from 'os';
 export default {
   name: 'goods_info',
@@ -70,9 +78,18 @@ export default {
           key: 'sale_price',
           render: (h, params) => {
             return h('div',
-              this.montyFormatterOutput(params.row.sale_price)
-              // util.montyFormatterOutpot(params.row.sale_price)
+              // this.montyFormatterOutput(params.row.sale_price)
+              util.montyFormatterOutpot(params.row.sale_price)
               // (parseInt(params.row.sale_price) / 100).toFixed(2)
+            )
+          }
+        },
+        {
+          title: '适用电压',
+          key: 'voltage',
+          render: (h, params) => {
+            return h('div',
+              this.voltageFormatterOutput(params.row.voltage)
             )
           }
         },
