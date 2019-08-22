@@ -14,6 +14,7 @@
 <script>
 import Tables from '_c/tables'
 import { getPurchaseOrder, getPurchaseRecord } from '@/api/order'
+import * as util from '@/utils/util'
 
 export default {
   name: 'purchase_order',
@@ -24,11 +25,35 @@ export default {
     return {
       purchaseOrderColumns: [
         { title: '订单编号', key: 'order_code', sortable: true },
-        { title: '总价', key: 'total_price' },
-        { title: '折扣', key: 'discount' },
+        {
+          title: '总价',
+          key: 'total_price',
+          render: (h, params) => {
+            return h('div',
+              util.montyFormatterOutput(params.row.total_price)
+            )
+          }
+        },
+        {
+          title: '折扣价格',
+          key: 'discount',
+          render: (h, params) => {
+            return h('div',
+              util.montyFormatterOutput(params.row.discount)
+            )
+          }
+        },
         { title: '付款方式', key: 'pay_way' },
         { title: '是否付款', key: 'is_pay_off' },
-        { title: '已付金额', key: 'pay_number' },
+        {
+          title: '已付金额',
+          key: 'pay_number',
+          render: (h, params) => {
+            return h('div',
+              util.montyFormatterOutput(params.row.pay_number)
+            )
+          }
+        },
         { title: '供应商名称', key: 'supplier_name' },
         { title: '凭证', key: 'photo' },
         { title: '备注信息', key: 'comment' },
@@ -66,7 +91,23 @@ export default {
         { title: '货物名称', key: 'goods_name' },
         { title: '采购订单', key: 'purchase_order_code', width: 100 },
         { title: '采购数量', key: 'num' },
-        { title: '采购价格', key: 'charge_price' },
+        {
+          title: '采购价格',
+          key: 'charge_price',
+          render: (h, params) => {
+            return h('div',
+              util.montyFormatterOutput(params.row.charge_price)
+            )
+          }
+        },
+        {
+          title: '采购总价',
+          render: (h, params) => {
+            return h('div',
+              util.montyFormatterOutput(parseInt(params.row.charge_price) * parseInt(params.row.num))
+            )
+          }
+        },
         { title: '采购日期', key: 'supplier_date' },
         { title: '供应商名称', key: 'supplier_name' },
         { title: '备注信息', key: 'comment' }

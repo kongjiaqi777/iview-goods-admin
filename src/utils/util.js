@@ -50,3 +50,37 @@ export function moneyFormatterInput (money) {
   let moneyInt = parseInt(money)
   return moneyInt * 100
 }
+
+// 顾客类别
+export function getCustomerType (type) {
+  switch (type) {
+    case 1:
+      return '普通客户'
+    case 2:
+      return '公司'
+    case 3:
+      return '车队'
+  }
+}
+
+// 供应商类别
+export function getSupplierType (type) {
+  switch (type) {
+    case 1:
+      return '普通客户'
+    case 2:
+      return '公司'
+  }
+}
+
+// 电压
+export function voltageFormatterOutput (value) {
+  switch (value) {
+    case 1:
+      return '12V'
+    case 2:
+      return '24V'
+    case 3:
+      return '220V'
+  }
+}

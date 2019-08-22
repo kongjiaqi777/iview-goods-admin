@@ -17,3 +17,12 @@ export const addCustomerInfo = (info) => {
     data: info
   })
 }
+
+// 更改顾客信息
+export const updateCustomerInfo = (info) => {
+  return axios.request({
+    url: 'v1/customer/update',
+    method: 'post',
+    data: info
+  })
+}
