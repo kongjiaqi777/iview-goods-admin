@@ -479,6 +479,14 @@ export default {
       this.addSalesOrderForm.photo = ''
       this.addSalesOrderForm.comment = ''
       this.addSalesOrderForm.total_price_display = 0
+      this.saleRecord = [
+        {
+          goods_id: 0,
+          num: 0,
+          sales_price: 0,
+          sales_price_display: 0
+        }
+      ]
     },
     // 显示销售订单
     showSalesOrderDetail (rowData) {
