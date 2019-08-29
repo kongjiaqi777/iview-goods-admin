@@ -266,7 +266,7 @@ export default {
                   props: {
                     value: val.id
                   }
-                }, val.name)
+                }, val.name + '-' + val.model)
               })
             )
           }

@@ -2,7 +2,8 @@
   <div>
     <Card>
       <i-button @click="showDetail=true, this.modelType=1, this.modelTitle='添加商品'" type="primary" size="large">添加商品</i-button>
-      <i-table :columns="columns" :data="tableData"></i-table>
+      <i-table :columns="columns" :data="tableData" style="margin-top: 30px;"></i-table>
+      <Page :total="totalCount" :current="currentPage" :page-size="pageSize" style="margin-top: 50px;text-align: center;" show-sizer show-elevator on-change="changeGetGoodsInfo" on-page-size-change="showPagesize"></Page>
     </Card>
     <Modal v-model="showDetail" :title="modelTitle" @on-ok="goodsSubmit" @on-cancel="clearFormData">
       <i-form ref="goodsForm" :model="addGoodsForm" :rules="addGoodsRule" :label-width="80">
@@ -14,6 +15,11 @@
           <i-input type="text" v-model="addGoodsForm.model" placeholder="请输入商品型号">
           </i-input>
         </Form-item>
+        <Form-item prop="model" label="电压">
+          <i-select v-model="addGoodsForm.voltage" placeholder="请选择电压">
+            <i-option v-for="item in voltageItem" :key="item.value" :label="item.label" :value="item.value"></i-option>
+          </i-select>
+        </Form-item>
         <Form-item prop="category_id" label="商品类别">
           <i-select v-model="addGoodsForm.category_id" placeholder="请选择商品类别">
             <i-option v-for="item in categoryItem" :key="item.id" :label="item.type_name" :value="item.id"></i-option>
@@ -23,6 +29,10 @@
           <i-input type="number" v-model="addGoodsForm.num" placeholder="请输入数量">
           </i-input>
         </Form-item>
+        <Form-item prop="purchase_price" label="进货价格">
+            <i-input type="number" v-model="addGoodsForm.purchase_price" placeholder="请输入建议售价">
+            </i-input>
+          </Form-item>
         <Form-item prop="sale_price" label="建议售价">
           <i-input type="number" v-model="addGoodsForm.sale_price" placeholder="请输入建议售价">
           </i-input>
@@ -65,7 +75,18 @@ export default {
         { title: '类别名称', key: 'type_name' },
         { title: '库存数量', key: 'num', editable: true },
         {
-          title: '货物单价',
+          title: '进货价格',
+          key: 'purchase_price',
+          render: (h, params) => {
+            return h('div',
+              // this.montyFormatterOutput(params.row.sale_price)
+              util.montyFormatterOutput(params.row.purchase_price)
+              // (parseInt(params.row.sale_price) / 100).toFixed(2)
+            )
+          }
+        },
+        {
+          title: '建议售价',
           key: 'sale_price',
           render: (h, params) => {
             return h('div',
@@ -105,19 +126,20 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.showDetail = true
-                      this.modelType = 2
-                      this.modelTitle = '修改商品信息'
-                      this.addGoodsForm.name = params.row.name
-                      this.addGoodsForm.model = params.row.model
-                      this.addGoodsForm.category_id = params.row.category_id
-                      this.addGoodsForm.num = String(params.row.num)
-                      this.addGoodsForm.sale_price = String(params.row.sale_price)
-                      this.addGoodsForm.brand = params.row.brand
-                      this.addGoodsForm.car_type = params.row.car_type
-                      this.addGoodsForm.location = params.row.location
-                      this.addGoodsForm.comment = params.row.comment
-                      this.addGoodsForm.id = params.row.id
+                      this.clickEditRow(params)
+                      // this.showDetail = true
+                      // this.modelType = 2
+                      // this.modelTitle = '修改商品信息'
+                      // this.addGoodsForm.name = params.row.name
+                      // this.addGoodsForm.model = params.row.model
+                      // this.addGoodsForm.category_id = params.row.category_id
+                      // this.addGoodsForm.num = String(params.row.num)
+                      // this.addGoodsForm.sale_price = String(params.row.sale_price)
+                      // this.addGoodsForm.brand = params.row.brand
+                      // this.addGoodsForm.car_type = params.row.car_type
+                      // this.addGoodsForm.location = params.row.location
+                      // this.addGoodsForm.comment = params.row.comment
+                      // this.addGoodsForm.id = params.row.id
                     }
                   }
                 }, '修改')
@@ -135,10 +157,12 @@ export default {
         category_id: 0,
         num: 0,
         sale_price: 0,
+        purchase_price: 0,
         brand: '',
         car_type: '',
         location: '',
         comment: '',
+        voltage: 0,
         id: 0
       },
       addGoodsRule: { // 添加validate
@@ -157,7 +181,19 @@ export default {
       },
       categoryItem: { // 类别列表
       },
-      modelType: 1 // 对话框类别 1添加 2更新
+      modelType: 1, // 对话框类别 1添加 2更新
+      voltageItem: [
+        { value: 0, label: '-' },
+        { value: 1, label: '12V' },
+        { value: 2, label: '24V' }
+      ],
+      totalCount: 0,
+      currentPage: 1,
+      pageSize: 10,
+      goodsParam: {
+        page: 1,
+        perpage: 10
+      }
     }
   },
   mounted () {
@@ -166,8 +202,10 @@ export default {
   },
   methods: {
     getGoodsListData () { // 获取商品列表
-      getGoodsInfo().then(res => {
+      getGoodsInfo(this.goodsParam).then(res => {
         this.tableData = res.data.info.list
+        this.totalCount = res.data.info.pagination.total_count
+        this.currentPage = res.data.pagination.page
       }).catch(err => {
         console.log(err)
       })
@@ -232,6 +270,8 @@ export default {
       this.addGoodsForm.location = ''
       this.addGoodsForm.comment = ''
       this.addGoodsForm.id = 0
+      this.addGoodsForm.purchase_price = 0
+      this.addGoodsForm.voltage = 0
     },
     clickEditRow (params) {
       this.showDetail = true
@@ -241,12 +281,25 @@ export default {
       this.addGoodsForm.model = params.row.model
       this.addGoodsForm.category_id = params.row.category_id
       this.addGoodsForm.num = String(params.row.num)
-      this.addGoodsForm.sale_price = String(params.row.sale_price)
+      this.addGoodsForm.sale_price = util.montyFormatterOutput(params.row.sale_price)
       this.addGoodsForm.brand = params.row.brand
       this.addGoodsForm.car_type = params.row.car_type
       this.addGoodsForm.location = params.row.location
       this.addGoodsForm.comment = params.row.comment
       this.addGoodsForm.id = params.row.id
+      this.addGoodsForm.purchase_price = util.montyFormatterOutput(params.row.purchase_price)
+      this.addGoodsForm.voltage = params.row.voltage
+    },
+    changeGetGoodsInfo (page) {
+      this.currentPage = page
+      this.goodsParam.page = page
+      this.goodsParam.perpage = this.pageSize
+      this.getGoodsListData()
+    },
+    showPagesize (perpage) {
+      this.pageSize = perpage
+      this.goodsParam.page = 1
+      this.goodsParam.perpage = perpage
     }
   }
 }

@@ -180,6 +180,26 @@ export default [
         component: () => import('@/view/kong/supplier_list')
       }
     ]
+  },
+  {
+    path: '/payment_list',
+    name: '还款记录',
+    component: Main,
+    meta: {
+      title: 'asyncOK',
+      icon: 'ios-book'
+    },
+    children: [
+      {
+        path: '/payment_list',
+        name: '还款记录',
+        meta: {
+          title: 'asyncOK',
+          icon: 'md-home'
+        },
+        component: () => import('@/view/kong/payment_list')
+      }
+    ]
   }
   // {
   //   path: '',

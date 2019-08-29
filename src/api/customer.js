@@ -26,3 +26,12 @@ export const updateCustomerInfo = (info) => {
     data: info
   })
 }
+
+// 更新还款信息列表
+export const getPaymentList = (data) => {
+  return axios.request({
+    url: 'v1/payment/list',
+    method: 'get',
+    params: data
+  })
+}

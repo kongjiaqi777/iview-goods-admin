@@ -82,5 +82,15 @@ export function voltageFormatterOutput (value) {
       return '24V'
     case 3:
       return '220V'
+    default:
+      return '-'
+  }
+}
+
+export function getPaymentType (type) {
+  if (type === 1) {
+    return '顾客'
+  } else {
+    return '供应商'
   }
 }
