@@ -2,7 +2,8 @@
   <div>
      <Card>
       <i-button type="primary" @click="showDetail=true, this.modelType=1, this.modelTitle='添加顾客'">添加</i-button>
-      <tables ref="tables" editable searchable search-place="top" v-model="customerData" :columns="customerColumns"/>
+      <!-- <tables ref="tables" v-model="customerData" :columns="customerColumns"/> -->
+      <i-table :columns="customerColumns" :data="customerData" style="margin-top: 30px;"></i-table>
     </Card>
     <Modal
       v-model="showDetail"
@@ -69,7 +70,7 @@
   </div>
 </template>
 <script>
-import Tables from '_c/tables'
+// import Tables from '_c/tables'
 import { getCustomerInfo, addCustomerInfo, updateCustomerInfo } from '@/api/customer'
 import * as util from '@/utils/util'
 

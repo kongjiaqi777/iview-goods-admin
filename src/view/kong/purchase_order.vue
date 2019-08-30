@@ -2,7 +2,8 @@
   <div>
      <Card>
       <i-button type="primary" @click="showUpdateDetail=true, this.modelType=1, this.modelTitle='添加采购订单'">添加采购订单</i-button>
-      <tables ref="purchaseTables" v-model="purchaseData" :columns="purchaseOrderColumns"/>
+      <!-- <tables ref="purchaseTables" v-model="purchaseData" :columns="purchaseOrderColumns"/> -->
+      <i-table :columns="purchaseOrderColumns" :data="purchaseData" style="margin-top: 30px;"></i-table>
     </Card>
     <Modal
         v-model="showDetail"
@@ -18,7 +19,7 @@
             </i-select>
           </Form-item>
 
-          <i-table borderd :columns="sullpierRecordColumn" :data="supplierRecord" style="margin-top:50px;margin-bottom:50px;">
+          <i-table borderd :columns="purchaseRecordColumn" :data="purchaseRecord" style="margin-top:50px;margin-bottom:50px;">
           </i-table>
 
           <Form-item label="总价" prop="total_price_display">
@@ -59,8 +60,9 @@
   </div>
 </template>
 <script>
-import Tables from '_c/tables'
-import { getPurchaseOrder, getPurchaseRecord } from '@/api/order'
+// import Tables from '_c/tables'
+import { getPurchaseOrder, getPurchaseRecord, addPurchaseOrder } from '@/api/order'
+import { getSupplierList } from '@/api/supplier'
 import * as util from '@/utils/util'
 
 export default {
@@ -70,6 +72,7 @@ export default {
   },
   data () {
     return {
+      // 采购订单列表列
       purchaseOrderColumns: [
         { title: '订单编号', key: 'order_code', sortable: true },
         {
@@ -122,7 +125,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.getpurchaseRecordItem(params.row.order_code)
+                      this.getPurchaseRecordItem(params.row.order_code)
                       this.showDetail = true
                     }
                   }
@@ -132,7 +135,9 @@ export default {
           ]
         }
       ],
+      // 采购丁订单数据
       purchaseData: [],
+      // 采购记录详情列
       purchaseRecordColumns: [
         { title: '货物编号', key: 'goods_id' },
         { title: '货物名称', key: 'goods_name' },
@@ -159,11 +164,17 @@ export default {
         { title: '供应商名称', key: 'supplier_name' },
         { title: '备注信息', key: 'comment' }
       ],
+      // 采购记录详情数据
       purchaseRecordData: [],
+      // 是否显示订单详情模态框
       showDetail: false,
+      // 是否显示添加订单模态框
       showUpdateDetail: false,
+      // 模态框类型 1添加 2修改
       modelType: 1,
+      // 模态框标题
       modelTitle: '添加采购订单',
+      // 添加采购订单FormData
       addPurchaseOrderForm: {
         supplier_id: 0, // 客户ID
         purchase_record: [],
@@ -176,6 +187,7 @@ export default {
         comment: '',
         total_price_display: 0
       },
+      // 添加采购订单Form Validate
       addPurchaseOrderRules: {
         supplier_id: [
           { required: true, message: '请选择客户' }
@@ -192,21 +204,252 @@ export default {
         pay_number: [
           { required: true, message: '请填写实际付款金额', trigger: 'blur' }
         ]
-      }
+      },
+      // 采购记录详情数据
+      purchaseRecord: [
+        {
+          goods_id: 0,
+          num: 0,
+          charge_price: 0,
+          charge_price_display: 0
+        }
+      ],
+      // 采购记录详情列
+      purchaseRecordColumn: [
+        {
+          title: '序号',
+          type: 'index',
+          width: 60,
+          align: 'center'
+        },
+        {
+          title: '商品名称',
+          key: 'goods_id',
+          width: 200,
+          align: 'center',
+          render: (h, params) => {
+            return h('Select',
+              {
+                props: {
+                  value: this.purchaseRecord[params.index].goods_id, // 数据的双向绑定 data是定义好的数据
+                  transfer: true
+                },
+                on: {
+                  'on-change': (event) => { // select改变事件
+                    this.purchaseRecord[params.index].goods_id = event
+                  }
+                }
+              },
+              this.goodsList.map(function (val, key) { // lunch_array是午餐的集合数组
+                return h('Option', {
+                  props: {
+                    value: val.id
+                  }
+                }, val.name + '-' + val.model)
+              })
+            )
+          }
+        },
+        {
+          title: '数量',
+          key: 'num',
+          width: 150,
+          align: 'center',
+          render: (h, params) => {
+            return h('Input', {
+              props: {
+                value: this.purchaseRecord[params.index].num
+              },
+              on: {
+                input: (val) => {
+                  this.purchaseRecord[params.index].num = val
+                },
+                'on-blur': () => {
+                  this.calPrice()
+                }
+              }
+            })
+          }
+        },
+        {
+          title: '售价',
+          key: 'charge_price_display',
+          width: 150,
+          align: 'center',
+          render: (h, params) => {
+            return h('Input', {
+              props: {
+                value: this.purchaseRecord[params.index].charge_price_display
+              },
+              on: {
+                input: (val) => {
+                  this.purchaseRecord[params.index].charge_price_display = val
+                  this.purchaseRecord[params.index].charge_price = util.moneyFormatterInput(val)
+                },
+                'on-blur': () => {
+                  this.calPrice()
+                }
+              }
+            })
+          }
+        },
+        {
+          title: '操作',
+          width: 150,
+          align: 'center',
+          key: 'handle',
+          render: (h, params) => {
+            return h('div',
+              [
+                h('Button', {
+                  props: {
+                    type: 'primary'
+                  },
+                  style: {
+                    width: '80%',
+                    display: 'flex',
+                    'justify-content': 'center'
+                  },
+                  on: {
+                    click: () => {
+                      if (this.purchaseRecord[params.index].goods_id === 0) {
+                        this.$Message.error('请选择商品')
+                        return
+                      }
+                      if (this.purchaseRecord[params.index].num === 0) {
+                        this.$Message.error('请填写商品数量')
+                        return
+                      }
+                      if (this.purchaseRecord[params.index].charge_price === 0) {
+                        this.$Message.error('请填写进货价格')
+                        return
+                      }
+                      this.purchaseRecord.push({
+                        goods_id: 0,
+                        num: 0,
+                        charge_price: 0,
+                        charge_price_display: 0
+                      })
+                    }
+                  }
+                }, '添加新数据')
+              ]
+            )
+          }
+        }
+      ],
+      // 付款方式
+      payWay: [
+        { value: 1, label: '现金' },
+        { value: 2, label: '微信' },
+        { value: 3, label: '支付宝' },
+        { value: 4, label: '银行卡' }
+      ],
+      // 付款额度
+      payOff: [
+        { value: 1, label: '已付款' },
+        { value: 2, label: '欠款' },
+        { value: 3, label: '部分付款' },
+        { value: 4, label: '付款结余' }
+      ],
+      // 供应商列表数据
+      supplierData: []
     }
   },
   mounted () {
-    getPurchaseOrder().then(res => {
-      this.purchaseData = res.data.info
-    }).catch(err => {
-      console.log(err)
-    })
+    this.getPurchaseOrderData()
+    this.getSupplierListData()
   },
   methods: {
-    getpurchaseRecordItem: function (order_code) {
+    // 获取采购订单列表
+    getPurchaseOrderData: function () {
+      getPurchaseOrder().then(res => {
+        this.purchaseData = res.data.info
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+    // 获取采购订单中的商品记录
+    getPurchaseRecordItem: function (order_code) {
       getPurchaseRecord({ 'purchase_order_code': order_code }).then(res => {
         console.log(order_code)
         this.purchaseRecordData = res.data.info
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+    // 添加采购订单
+    AddOrder: function () {
+      this.$refs.addPurshaseOrder.validate((valid) => {
+        if (valid) {
+          this.validateRecordArray()
+          // 价钱格式化
+          this.addPurchaseOrderForm.purchase_record = this.purchaseRecord
+          this.addPurchaseOrderForm.total_price = util.moneyFormatterInput(this.addSalesOrderForm.total_price)
+          // 重新计算总价
+          this.calPrice()
+          // 请求方法
+          addPurchaseOrder(this.addPurchaseOrderForm).then(res => {
+            if (res.data.code === 0) {
+              this.$Message.success('添加成功!')
+              this.getPurchaseOrder()
+            } else {
+              this.$Message.error('添加失败请重试!')
+            }
+          })
+        }
+      })
+    },
+    // 清理表单数据
+    clearFormData: function () {
+      this.addPurchaseOrderForm.supplier_id = 0
+      this.addPurchaseOrderForm.purchase_record = []
+      this.addPurchaseOrderForm.pay_way = 0
+      this.addPurchaseOrderForm.discount = 0
+      this.addPurchaseOrderForm.is_pay_off = 0
+      this.addPurchaseOrderForm.pay_number = 0
+      this.addPurchaseOrderForm.total_price = 0
+      this.addPurchaseOrderForm.photo = ''
+      this.addPurchaseOrderForm.comment = ''
+      this.addPurchaseOrderForm.total_price_display = 0
+      this.purchaseRecord = [
+        {
+          goods_id: 0,
+          num: 0,
+          charge_price: 0,
+          charge_price_display: 0
+        }
+      ]
+    },
+    // 验证商品记录
+    validateRecordArray: function () {
+      this.purchaseRecord.forEach((item) => {
+        if (item.goods_id === 0) {
+          this.$Message.error('请选择商品')
+          return
+        }
+        if (item.num === 0) {
+          this.$Message.error('请填写商品数量')
+          return
+        }
+        if (item.charge_price_display === 0) {
+          this.$Message.error('请填写进货价格')
+        }
+      })
+    },
+    // 计算总价
+    calPrice () {
+      this.addPurchaseOrderForm.total_price_display = 0
+      this.addPurchaseOrderForm.total_price = 0
+      this.purchaseRecord.forEach((item) => {
+        this.addPurchaseOrderForm.total_price_display += parseInt(item.num) * parseInt(item.charge_price_display)
+        this.addPurchaseOrderForm.total_price = util.moneyFormatterInput(this.addPurchaseOrderForm.total_price_display)
+      })
+    },
+    // 获取供应商列表
+    getSupplierListData () {
+      getSupplierList().then(res => {
+        this.supplierData = res.data.info.list
       }).catch(err => {
         console.log(err)
       })

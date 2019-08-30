@@ -1,7 +1,6 @@
 <template>
   <div>
     <Card>
-
         <i-table :columns="paymentColumns" :data="paymentData"></i-table>
     </Card>
   </div>

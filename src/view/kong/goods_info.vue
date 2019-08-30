@@ -3,7 +3,15 @@
     <Card>
       <i-button @click="showDetail=true, this.modelType=1, this.modelTitle='添加商品'" type="primary" size="large">添加商品</i-button>
       <i-table :columns="columns" :data="tableData" style="margin-top: 30px;"></i-table>
-      <Page :total="totalCount" :current="currentPage" :page-size="pageSize" style="margin-top: 50px;text-align: center;" show-sizer show-elevator on-change="changeGetGoodsInfo" on-page-size-change="showPagesize"></Page>
+      <Page
+      :total="totalCount"
+      :current="currentPage"
+      :page-size="pageSize"
+      style="margin-top: 50px;text-align: center;"
+      show-total
+      show-elevator
+      @on-change="changePage">
+    </Page>
     </Card>
     <Modal v-model="showDetail" :title="modelTitle" @on-ok="goodsSubmit" @on-cancel="clearFormData">
       <i-form ref="goodsForm" :model="addGoodsForm" :rules="addGoodsRule" :label-width="80">
@@ -15,7 +23,7 @@
           <i-input type="text" v-model="addGoodsForm.model" placeholder="请输入商品型号">
           </i-input>
         </Form-item>
-        <Form-item prop="model" label="电压">
+        <Form-item prop="voltage" label="电压">
           <i-select v-model="addGoodsForm.voltage" placeholder="请选择电压">
             <i-option v-for="item in voltageItem" :key="item.value" :label="item.label" :value="item.value"></i-option>
           </i-select>
@@ -26,15 +34,15 @@
           </i-select>
         </Form-item>
         <Form-item prop="num" label="商品库存">
-          <i-input type="number" v-model="addGoodsForm.num" placeholder="请输入数量">
+          <i-input type="text" v-model="addGoodsForm.num" placeholder="请输入数量">
           </i-input>
         </Form-item>
         <Form-item prop="purchase_price" label="进货价格">
-            <i-input type="number" v-model="addGoodsForm.purchase_price" placeholder="请输入建议售价">
+            <i-input type="text" v-model="addGoodsForm.purchase_price" placeholder="请输入建议售价">
             </i-input>
-          </Form-item>
+        </Form-item>
         <Form-item prop="sale_price" label="建议售价">
-          <i-input type="number" v-model="addGoodsForm.sale_price" placeholder="请输入建议售价">
+          <i-input type="text" v-model="addGoodsForm.sale_price" placeholder="请输入建议售价">
           </i-input>
         </Form-item>
         <Form-item prop="brand" label="品牌">
@@ -205,7 +213,8 @@ export default {
       getGoodsInfo(this.goodsParam).then(res => {
         this.tableData = res.data.info.list
         this.totalCount = res.data.info.pagination.total_count
-        this.currentPage = res.data.pagination.page
+        this.currentPage = res.data.info.pagination.page
+        // this.pageSize = parseInt(res.data.info.pagination.perpage)
       }).catch(err => {
         console.log(err)
       })
@@ -290,16 +299,11 @@ export default {
       this.addGoodsForm.purchase_price = util.montyFormatterOutput(params.row.purchase_price)
       this.addGoodsForm.voltage = params.row.voltage
     },
-    changeGetGoodsInfo (page) {
+    changePage (page) {
       this.currentPage = page
       this.goodsParam.page = page
       this.goodsParam.perpage = this.pageSize
       this.getGoodsListData()
-    },
-    showPagesize (perpage) {
-      this.pageSize = perpage
-      this.goodsParam.page = 1
-      this.goodsParam.perpage = perpage
     }
   }
 }

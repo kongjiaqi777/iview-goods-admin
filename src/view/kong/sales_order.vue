@@ -1,8 +1,17 @@
 <template>
   <div>
      <Card>
-      <i-button type="primary" @click="showUpdateDetail=true, this.modelType=1, this.modelTitle='添加销售订单'">添加销售订单</i-button>
-      <i-table :columns="columns" :data="tableData"></i-table>
+      <i-button type="primary" @click="addSalesOrderFunc">添加销售订单</i-button>
+      <i-table :columns="columns" :data="tableData" style="margin-top: 30px;"></i-table>
+      <Page
+      :total="totalCount"
+      :current="currentPage"
+      :page-size="pageSize"
+      style="margin-top: 50px;text-align: center;"
+      show-total
+      show-elevator
+      @on-change="changePage">
+      </Page>
     </Card>
     <Modal
         v-model="showDetail"
@@ -10,8 +19,8 @@
         @on-ok="showDetail=false" width="800">
         <i-table :data="recordData" :columns="recordColumns"></i-table>
     </Modal>
-    <Modal v-model="showUpdateDetail" title="修改订单信息" @on-ok="AddOrder" @on-cancel="clearFormData" width="800">
-      <i-form ref="addSalesOrder" :model="addSalesOrderForm" :rules="addSalesOrderRules" :label-width="100" style="width:713px;padding-top:50px;">
+    <Modal v-model="showUpdateDetail" title="修改订单信息" @on-ok="AddOrder" @on-cancel="clearFormData" width="900">
+      <i-form ref="addSalesOrder" :model="addSalesOrderForm" :rules="addSalesOrderRules" :label-width="100" style="width:813px;padding-top:50px;">
           <Form-item label="客户信息" prop="customer_id">
             <i-select v-model="addSalesOrderForm.customer_id" placeholder="请选择客户">
               <i-option v-for="item in customerData" :key="item.id" :value="item.id" :label="item.name"></i-option>
@@ -246,7 +255,7 @@ export default {
         {
           title: '商品名称',
           key: 'goods_id',
-          width: 200,
+          width: 300,
           align: 'center',
           render: (h, params) => {
             return h('Select',
@@ -258,10 +267,17 @@ export default {
                 on: {
                   'on-change': (event) => { // select改变事件
                     this.saleRecord[params.index].goods_id = event
+                    let obj = this.goodsList.find(function (x) {
+                      if (x.id === event) {
+                        return x
+                      }
+                    })
+                    this.saleRecord[params.index].sales_price = obj.sale_price
+                    this.saleRecord[params.index].sales_price_display = util.montyFormatterOutput(obj.sale_price)
                   }
                 }
               },
-              this.goodsList.map(function (val, key) { // lunch_array是午餐的集合数组
+              this.goodsList.map(function (val, key) {
                 return h('Option', {
                   props: {
                     value: val.id
@@ -373,7 +389,14 @@ export default {
         { value: 4, label: '付款结余' }
       ],
       modelType: 1,
-      modelTitle: '添加销售订单'
+      modelTitle: '添加销售订单',
+      totalCount: 0,
+      currentPage: 1,
+      pageSize: 10,
+      orderParam: {
+        page: 1,
+        perpage: 10
+      }
     }
   },
   mounted () {
@@ -384,8 +407,12 @@ export default {
   methods: {
     // 获取订单列表
     getSalesOrderList () {
-      getSalesOrder().then(res => {
-        this.tableData = res.data.info
+      getSalesOrder(this.orderParam).then(res => {
+        if (res.data.info) {
+          this.tableData = res.data.info.list
+          this.totalCount = res.data.info.pagination.total_count
+          this.currentPage = res.data.info.pagination.page
+        }
       }).catch(err => {
         console.log(err)
       })
@@ -443,6 +470,7 @@ export default {
     },
     // 计算总价
     calPrice () {
+      console.log(this.saleRecord)
       this.addSalesOrderForm.total_price_display = 0
       this.addSalesOrderForm.total_price = 0
       this.saleRecord.forEach((item) => {
@@ -520,6 +548,17 @@ export default {
       this.addSalesOrderForm.comment = rowData.comment
       this.modelType = 2
       this.modelTitle = '修改订单信息'
+      this.showUpdateDetail = true
+    },
+    changePage (page) {
+      this.currentPage = page
+      this.orderParam.page = page
+      this.orderParam.perpage = this.pageSize
+      this.getSalesOrderList()
+    },
+    addSalesOrderFunc () {
+      this.modelType = 1
+      this.modelTitle = '添加销售订单'
       this.showUpdateDetail = true
     }
   }

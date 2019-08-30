@@ -2,7 +2,8 @@
   <div>
      <Card>
       <i-button type="primary" @click="showDetail=true, this.modelType=1, this.modelTitle='添加商品类别'">添加</i-button>
-      <tables ref="tables" editable searchable search-place="top" v-model="categoryData" :columns="categoryColumns"/>
+      <!-- <tables ref="tables" editable searchable search-place="top" v-model="categoryData" :columns="categoryColumns"/> -->
+      <i-table :columns="categoryColumns" :data="categoryData" style="margin-top: 30px;"></i-table>
     </Card>
     <Modal
         v-model="showDetail"
@@ -22,7 +23,7 @@
   </div>
 </template>
 <script>
-import Tables from '_c/tables'
+// import Tables from '_c/tables'
 import { getCategoryList, addCategory, modifyCategory } from '@/api/goods'
 
 export default {
