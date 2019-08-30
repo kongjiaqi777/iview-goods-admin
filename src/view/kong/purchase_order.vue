@@ -67,9 +67,9 @@ import * as util from '@/utils/util'
 
 export default {
   name: 'purchase_order',
-  components: {
-    Tables
-  },
+  // components: {
+  //   Tables
+  // },
   data () {
     return {
       // 采购订单列表列

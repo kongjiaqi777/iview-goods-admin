@@ -28,9 +28,9 @@ import { getCategoryList, addCategory, modifyCategory } from '@/api/goods'
 
 export default {
   name: 'category_list',
-  components: {
-    Tables
-  },
+  // components: {
+  //   Tables
+  // },
   data () {
     return {
       categoryColumns: [ // 类别列表项

@@ -76,9 +76,9 @@ import * as util from '@/utils/util'
 
 export default {
   name: 'supplier_list',
-  components: {
-    Tables
-  },
+  // components: {
+  //   Tables
+  // },
   data () {
     return {
       supplierColumns: [
