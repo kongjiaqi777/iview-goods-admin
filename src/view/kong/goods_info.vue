@@ -1,7 +1,7 @@
 <template>
   <div>
     <Card>
-      <i-button @click="showDetail=true, this.modelType=1, this.modelTitle='添加商品'" type="primary" size="large">添加商品</i-button>
+      <i-button @click="handleAdd" type="primary" size="large">添加商品</i-button>
       <i-table :columns="columns" :data="tableData" style="margin-top: 30px;"></i-table>
       <Page
       :total="totalCount"
@@ -11,52 +11,81 @@
       show-total
       show-elevator
       @on-change="changePage">
-    </Page>
+      </Page>
     </Card>
     <Modal v-model="showDetail" :title="modelTitle" @on-ok="goodsSubmit" @on-cancel="clearFormData">
       <i-form ref="goodsForm" :model="addGoodsForm" :rules="addGoodsRule" :label-width="80">
+        <!-- 商品类别 -->
+        <Form-item prop="category_id" label="商品类别">
+          <i-select v-model="addGoodsForm.category_id" placeholder="请选择商品类别" filterable>
+            <i-option v-for="item in categoryItem" :key="item.id" :label="item.type_name" :value="item.id"></i-option>
+          </i-select>
+        </Form-item>
+        <!-- 商品名称 -->
         <Form-item prop="name" label="商品名称">
           <i-input type="text" v-model="addGoodsForm.name" placeholder="请输入商品名称">
           </i-input>
         </Form-item>
+        <!-- 商品型号 -->
         <Form-item prop="model" label="商品型号">
           <i-input type="text" v-model="addGoodsForm.model" placeholder="请输入商品型号">
           </i-input>
         </Form-item>
-        <Form-item prop="voltage" label="电压">
+        <!-- 商品规格 -->
+        <Form-item prop="unit" label="商品规格">
+          <i-select v-model="addGoodsForm.unit" placeholder="请选择商品规格" filterable>
+            <i-option v-for="item in unitItem" :key="item.id" :label="item.unit_name" :value="item.id"></i-option>
+          </i-select>
+        </Form-item>
+        <!-- 单位抵扣方式 -->
+        <Form-item prop="unit_type" label="库存扣减方式">
+          <i-select v-model="addGoodsForm.unit_type" placeholder="请选择商品库存减扣方式" filterable>
+            <i-option v-for="item in unitTypeItem" :key="item.id" :label="item.label" :value="item.id" on-change="unitTypeChange"></i-option>
+          </i-select>
+        </Form-item>
+        <!-- 一对多抵扣的规格 -->
+        <Form-item prop="unit_convert_id" label="库存扣减规格" v-show="convertShow">
+          <i-select v-model="addGoodsForm.unit_convert_id" placeholder="请选择商品库存减扣规格" filterable>
+            <i-option v-for="item in unitConvertItem" :key="item.id" :label="item.label" :value="item.id"></i-option>
+          </i-select>
+        </Form-item>
+        <!-- 额定电压 -->
+        <Form-item prop="voltage" label="额定电压">
           <i-select v-model="addGoodsForm.voltage" placeholder="请选择电压">
             <i-option v-for="item in voltageItem" :key="item.value" :label="item.label" :value="item.value"></i-option>
           </i-select>
         </Form-item>
-        <Form-item prop="category_id" label="商品类别">
-          <i-select v-model="addGoodsForm.category_id" placeholder="请选择商品类别">
-            <i-option v-for="item in categoryItem" :key="item.id" :label="item.type_name" :value="item.id"></i-option>
-          </i-select>
-        </Form-item>
+        <!-- 商品库存 -->
         <Form-item prop="num" label="商品库存">
           <i-input type="text" v-model="addGoodsForm.num" placeholder="请输入数量">
           </i-input>
         </Form-item>
-        <Form-item prop="purchase_price" label="进货价格">
+        <!-- 采购价格 -->
+        <Form-item prop="purchase_price" label="采购价格">
             <i-input type="text" v-model="addGoodsForm.purchase_price" placeholder="请输入建议售价">
             </i-input>
         </Form-item>
-        <Form-item prop="sale_price" label="建议售价">
+        <!-- 建议售价 -->
+        <Form-item prop="sale_price" label="销售价格">
           <i-input type="text" v-model="addGoodsForm.sale_price" placeholder="请输入建议售价">
           </i-input>
         </Form-item>
+        <!-- 品牌 -->
         <Form-item prop="brand" label="品牌">
           <i-input type="text" v-model="addGoodsForm.brand" placeholder="请输入品牌">
           </i-input>
         </Form-item>
+        <!-- 适用车型 -->
         <Form-item prop="car_type" label="适用车型">
           <i-input type="text" v-model="addGoodsForm.car_type" placeholder="请输入适用车型">
           </i-input>
         </Form-item>
+        <!-- 存放位置 -->
         <Form-item prop="location" label="存放位置">
           <i-input type="text" v-model="addGoodsForm.location" placeholder="请输入位置">
           </i-input>
         </Form-item>
+        <!-- 备注信息 -->
         <Form-item prop="comment" label="备注信息">
           <i-input type="text" v-model="addGoodsForm.comment" placeholder="请输入备注信息">
           </i-input>
@@ -67,29 +96,30 @@
 </template>
 
 <script>
-// import Tables from '_c/tables'
-import { getGoodsInfo, addGoodsInfo, getCategoryList, modifyGoodsInfo } from '@/api/goods'
+import { getGoodsInfo, addGoodsInfo, suggestCategory, modifyGoodsInfo } from '@/api/goods'
+import { unitSuggest } from '@/api/customer'
 import * as util from '@/utils/util'
 export default {
   name: 'goods_info',
-  // components: {
-  //   Tables
-  // },
   data () {
     return {
-      columns: [ // 商品表显示列
+      // 商品表显示列
+      columns: [
+        { title: '货物编号', key: 'id' },
         { title: '货物名称', key: 'name', sortable: true },
         { title: '货物型号', key: 'model' },
         { title: '类别名称', key: 'type_name' },
         { title: '库存数量', key: 'num', editable: true },
         {
+          title: '单位',
+          key: 'unit_name'
+        },
+        {
           title: '进货价格',
           key: 'purchase_price',
           render: (h, params) => {
             return h('div',
-              // this.montyFormatterOutput(params.row.sale_price)
               util.montyFormatterOutput(params.row.purchase_price)
-              // (parseInt(params.row.sale_price) / 100).toFixed(2)
             )
           }
         },
@@ -98,9 +128,7 @@ export default {
           key: 'sale_price',
           render: (h, params) => {
             return h('div',
-              // this.montyFormatterOutput(params.row.sale_price)
               util.montyFormatterOutput(params.row.sale_price)
-              // (parseInt(params.row.sale_price) / 100).toFixed(2)
             )
           }
         },
@@ -110,6 +138,15 @@ export default {
           render: (h, params) => {
             return h('div',
               util.voltageFormatterOutput(params.row.voltage)
+            )
+          }
+        },
+        {
+          title: '单位减扣方式',
+          key: 'unit_type',
+          render: (h, params) => {
+            return h('div',
+              util.getUnitType(params.row.unit_type)
             )
           }
         },
@@ -135,19 +172,6 @@ export default {
                   on: {
                     click: () => {
                       this.clickEditRow(params)
-                      // this.showDetail = true
-                      // this.modelType = 2
-                      // this.modelTitle = '修改商品信息'
-                      // this.addGoodsForm.name = params.row.name
-                      // this.addGoodsForm.model = params.row.model
-                      // this.addGoodsForm.category_id = params.row.category_id
-                      // this.addGoodsForm.num = String(params.row.num)
-                      // this.addGoodsForm.sale_price = String(params.row.sale_price)
-                      // this.addGoodsForm.brand = params.row.brand
-                      // this.addGoodsForm.car_type = params.row.car_type
-                      // this.addGoodsForm.location = params.row.location
-                      // this.addGoodsForm.comment = params.row.comment
-                      // this.addGoodsForm.id = params.row.id
                     }
                   }
                 }, '修改')
@@ -156,10 +180,15 @@ export default {
           }
         }
       ],
-      tableData: [], // 商品表数据
-      modelTitle: '添加商品', // 标题
-      showDetail: false, // 是否显示模态框
-      addGoodsForm: { // 添加商品数据
+      // 商品表数据
+      tableData: [],
+      // 标题
+      modelTitle: '添加商品',
+      // 是否显示模态框
+      showDetail: false,
+      // 添加商品数据
+      addGoodsForm: {
+        id: 0,
         name: '',
         model: '',
         category_id: 0,
@@ -171,9 +200,12 @@ export default {
         location: '',
         comment: '',
         voltage: 0,
-        id: 0
+        unit: 0,
+        unit_type: 1,
+        unit_convert_id: 0
       },
-      addGoodsRule: { // 添加validate
+      // 添加validate
+      addGoodsRule: {
         name: [
           { required: true, message: '请填写商品名称', trigger: 'blur' }
         ],
@@ -185,52 +217,80 @@ export default {
         ],
         sale_price: [
           { required: true, message: '请填写建议零售价', trigger: 'blur' }
+        ],
+        purchase_price: [
+          { required: true, message: '请填写进货价格', trigger: 'blur' }
+        ],
+        unit: [
+          { required: true, message: '请选择单位' }
         ]
       },
-      categoryItem: { // 类别列表
+      // 类别列表
+      categoryItem: {
       },
-      modelType: 1, // 对话框类别 1添加 2更新
+      // 对话框类别 1添加 2更新
+      modelType: 1,
+      // 电压
       voltageItem: [
         { value: 0, label: '-' },
         { value: 1, label: '12V' },
         { value: 2, label: '24V' }
       ],
+      // 总商品数
       totalCount: 0,
+      // 当前页
       currentPage: 1,
-      pageSize: 10,
+      // 页码
+      pageSize: 20,
+      // 商品查询参数
       goodsParam: {
         page: 1,
-        perpage: 10
-      }
+        perpage: 20
+      },
+      // 单位列表
+      unitItem: [],
+      // 库存扣减方式
+      unitTypeItem: [
+        { value: 1, label: '一对一减扣' },
+        { value: 2, label: '一对多减扣' },
+        { value: 3, label: '手动减扣' }
+      ],
+      // 库存减扣规格
+      unitConvertItem: [],
+      // 是否显示单位抵扣规则
+      convertShow: true
     }
   },
   mounted () {
     this.getGoodsListData()
     this.getCategoryListData()
+    this.getUnitSuggest()
   },
   methods: {
-    getGoodsListData () { // 获取商品列表
+    // 获取商品列表
+    getGoodsListData () {
       getGoodsInfo(this.goodsParam).then(res => {
         this.tableData = res.data.info.list
         this.totalCount = res.data.info.pagination.total_count
         this.currentPage = res.data.info.pagination.page
-        // this.pageSize = parseInt(res.data.info.pagination.perpage)
       }).catch(err => {
         console.log(err)
       })
     },
-    getCategoryListData () { // 获取类别列表
-      getCategoryList().then(res => {
+    // 获取类别列表
+    getCategoryListData () {
+      suggestCategory().then(res => {
         this.categoryItem = res.data.info
       }).catch(err => {
         console.log(err)
       })
     },
-    goodsSubmit () { // 添加商品
-      console.log(this.addGoodsForm)
+    // 添加商品
+    goodsSubmit () {
       this.$refs.goodsForm.validate((valid) => {
         if (valid) {
-          this.addGoodsForm.sale_price = this.moneyFormatterInput(this.addGoodsForm.sale_price)
+          this.addGoodsForm.sale_price = util.moneyFormatterInput(this.addGoodsForm.sale_price)
+          this.addGoodsForm.purchase_price = util.moneyFormatterInput(this.addGoodsForm.purchase_price)
           if (this.modelType === 1) {
             addGoodsInfo(this.addGoodsForm).then(res => {
               if (res.data.code === 0) {
@@ -268,6 +328,7 @@ export default {
         }
       })
     },
+    // 清理表单
     clearFormData () {
       this.addGoodsForm.name = ''
       this.addGoodsForm.model = ''
@@ -282,6 +343,7 @@ export default {
       this.addGoodsForm.purchase_price = 0
       this.addGoodsForm.voltage = 0
     },
+    // 点击编辑
     clickEditRow (params) {
       this.showDetail = true
       this.modelType = 2
@@ -299,11 +361,32 @@ export default {
       this.addGoodsForm.purchase_price = util.montyFormatterOutput(params.row.purchase_price)
       this.addGoodsForm.voltage = params.row.voltage
     },
+    // 点击页码
     changePage (page) {
       this.currentPage = page
       this.goodsParam.page = page
       this.goodsParam.perpage = this.pageSize
       this.getGoodsListData()
+    },
+    // 点击添加商品
+    handleAdd () {
+      this.showDetail = true
+      this.modelType = 1
+      this.modelTitle = '添加商品'
+    },
+    // 单位
+    getUnitSuggest () {
+      unitSuggest().then(res => {
+        this.unitItem = res.data.info
+      })
+    },
+    // 单位抵扣方式切换
+    unitTypeChange () {
+      if (this.addGoodsForm.unit_type === 1) {
+        this.convertShow = false
+      } else if (this.addGoodsForm.unit_type === 2) {
+        this.convertShow = true
+      }
     }
   }
 }

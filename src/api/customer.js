@@ -35,3 +35,21 @@ export const getPaymentList = (data) => {
     params: data
   })
 }
+
+// 单位列表
+export const getUnitList = (data) => {
+  return axios.request({
+    url: 'v1/unit/list',
+    method: 'get',
+    params: data
+  })
+}
+
+// 单位suggest
+export const unitSuggest = (data) => {
+  return axios.request({
+    url: 'v1/unit/suggest',
+    method: 'get',
+    params: data
+  })
+}

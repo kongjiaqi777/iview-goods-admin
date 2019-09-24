@@ -43,7 +43,7 @@ export default {
   data () {
     return {
       form: {
-        userName: 'super_admin',
+        userName: '15910337408',
         password: ''
       }
     }

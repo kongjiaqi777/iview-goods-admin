@@ -1,15 +1,15 @@
 
 /*
- *首先是相互调用，接收的地方用import，输出的地方用export
- *比如这里面需要用到cookie.js中的方法，那么就要先把cookie引用进来，这个思想跟后面的引用是一致的
- */
+*首先是相互调用，接收的地方用import，输出的地方用export
+*比如这里面需要用到cookie.js中的方法，那么就要先把cookie引用进来，这个思想跟后面的引用是一致的
+*/
 // import cookie from './cookie'
 
 /*
- *接下来是定义全局函数
- *因为全局函数是要给外部使用的，所以需要将函数用export告知外部即可
- *比如我们在这里定义了日期的格式，供后面组件统一改变
- */
+*接下来是定义全局函数
+*因为全局函数是要给外部使用的，所以需要将函数用export告知外部即可
+*比如我们在这里定义了日期的格式，供后面组件统一改变
+*/
 
 // 支付方式
 export function showPayWay (pay) {
@@ -92,5 +92,16 @@ export function getPaymentType (type) {
     return '顾客'
   } else {
     return '供应商'
+  }
+}
+
+export function getUnitType (type) {
+  switch (type) {
+    case 1:
+      return '一对一'
+    case 2:
+      return '一对多'
+    case 3:
+      return '手动扣'
   }
 }
