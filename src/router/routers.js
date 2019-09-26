@@ -51,7 +51,7 @@ export default [
   //   ]
   // },
   {
-    path: '/',
+    path: '/home',
     name: '商品列表',
     component: Main,
     redirect: '/home',

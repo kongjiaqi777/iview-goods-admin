@@ -1,5 +1,8 @@
 import axios from 'axios'
 import store from '@/store'
+import { getToken } from '@/libs/util' // canTurnTo
+
+const token = getToken()
 // import { Spin } from 'iview'
 const addErrorLog = errorInfo => {
   const { statusText, status, request: { responseURL } } = errorInfo
@@ -20,8 +23,13 @@ class HttpRequest {
   getInsideConfig () {
     const config = {
       baseURL: this.baseUrl,
-      headers: {
-        //
+      Headers: {
+        // 'Authorization': this.token
+        'Authorization': 'Bearer ' + token,
+        // 'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild'
+        // 'Access-Control-Allow-Methods': 'PUT,POST,GET,DELETE,OPTIONS',
+        // 'Content-Type': 'application/json;charset=utf-8'
       }
     }
     return config
@@ -66,7 +74,9 @@ class HttpRequest {
   }
   request (options) {
     const instance = axios.create()
+    // instance.defaults.headers.Authorization = 'Bearer' + this.token
     options = Object.assign(this.getInsideConfig(), options)
+    console.log(options)
     this.interceptors(instance, options.url)
     return instance(options)
   }

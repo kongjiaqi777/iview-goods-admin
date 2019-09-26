@@ -18,7 +18,7 @@
         <!-- 商品类别 -->
         <Form-item prop="category_id" label="商品类别">
           <i-select v-model="addGoodsForm.category_id" placeholder="请选择商品类别" filterable>
-            <i-option v-for="item in categoryItem" :key="item.id" :label="item.type_name" :value="item.id"></i-option>
+            <i-option v-for="item in this.categoryItem" :key="item.id" :label="item.type_name" :value="item.id"></i-option>
           </i-select>
         </Form-item>
         <!-- 商品名称 -->
@@ -34,25 +34,25 @@
         <!-- 商品规格 -->
         <Form-item prop="unit" label="商品规格">
           <i-select v-model="addGoodsForm.unit" placeholder="请选择商品规格" filterable>
-            <i-option v-for="item in unitItem" :key="item.id" :label="item.unit_name" :value="item.id"></i-option>
+            <i-option v-for="item in this.unitItem" :key="item.id" :label="item.unit_name" :value="item.id"></i-option>
           </i-select>
         </Form-item>
         <!-- 单位抵扣方式 -->
         <Form-item prop="unit_type" label="库存扣减方式">
           <i-select v-model="addGoodsForm.unit_type" placeholder="请选择商品库存减扣方式" filterable>
-            <i-option v-for="item in unitTypeItem" :key="item.id" :label="item.label" :value="item.id" on-change="unitTypeChange"></i-option>
+            <i-option v-for="item in this.unitTypeItem" :key="item.id" :label="item.label" :value="item.id" on-change="unitTypeChange"></i-option>
           </i-select>
         </Form-item>
         <!-- 一对多抵扣的规格 -->
         <Form-item prop="unit_convert_id" label="库存扣减规格" v-show="convertShow">
           <i-select v-model="addGoodsForm.unit_convert_id" placeholder="请选择商品库存减扣规格" filterable>
-            <i-option v-for="item in unitConvertItem" :key="item.id" :label="item.label" :value="item.id"></i-option>
+            <i-option v-for="item in this.unitConvertItem" :key="item.id" :label="item.unit_convert_name" :value="item.id"></i-option>
           </i-select>
         </Form-item>
         <!-- 额定电压 -->
         <Form-item prop="voltage" label="额定电压">
           <i-select v-model="addGoodsForm.voltage" placeholder="请选择电压">
-            <i-option v-for="item in voltageItem" :key="item.value" :label="item.label" :value="item.value"></i-option>
+            <i-option v-for="item in this.voltageItem" :key="item.value" :label="item.label" :value="item.value"></i-option>
           </i-select>
         </Form-item>
         <!-- 商品库存 -->
@@ -391,6 +391,7 @@ export default {
     },
     getUnitConvertList () {
       unitConvert().then(res => {
+        console.log(res)
         this.unitConvertItem = res.data.info
       })
     }
