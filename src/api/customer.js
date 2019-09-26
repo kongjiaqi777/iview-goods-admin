@@ -53,3 +53,11 @@ export const unitSuggest = (data) => {
     params: data
   })
 }
+
+export const unitConvert = (data) => {
+  return axios.request({
+    url: 'v1/unit/convertList',
+    method: 'get',
+    params: data
+  })
+}

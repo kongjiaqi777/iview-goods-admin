@@ -97,7 +97,7 @@
 
 <script>
 import { getGoodsInfo, addGoodsInfo, suggestCategory, modifyGoodsInfo } from '@/api/goods'
-import { unitSuggest } from '@/api/customer'
+import { unitSuggest, unitConvert } from '@/api/customer'
 import * as util from '@/utils/util'
 export default {
   name: 'goods_info',
@@ -265,6 +265,7 @@ export default {
     this.getGoodsListData()
     this.getCategoryListData()
     this.getUnitSuggest()
+    this.getUnitConvertList()
   },
   methods: {
     // 获取商品列表
@@ -387,6 +388,11 @@ export default {
       } else if (this.addGoodsForm.unit_type === 2) {
         this.convertShow = true
       }
+    },
+    getUnitConvertList () {
+      unitConvert().then(res => {
+        this.unitConvertItem = res.data.info
+      })
     }
   }
 }
