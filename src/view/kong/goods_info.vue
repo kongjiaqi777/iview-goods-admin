@@ -39,13 +39,14 @@
         </Form-item>
         <!-- 单位抵扣方式 -->
         <Form-item prop="unit_type" label="库存扣减方式">
-          <i-select v-model="addGoodsForm.unit_type" placeholder="请选择商品库存减扣方式" filterable>
-            <i-option v-for="item in this.unitTypeItem" :key="item.id" :label="item.label" :value="item.id" on-change="unitTypeChange"></i-option>
+          <i-select v-model="addGoodsForm.unit_type" placeholder="请选择商品库存减扣方式" filterable :on-change="unitTypeChange()">
+            <i-option v-for="item in this.unitTypeItem" :key="item.value" :label="item.label" :value="item.value"></i-option>
           </i-select>
         </Form-item>
         <!-- 一对多抵扣的规格 -->
         <Form-item prop="unit_convert_id" label="库存扣减规格" v-show="convertShow">
           <i-select v-model="addGoodsForm.unit_convert_id" placeholder="请选择商品库存减扣规格" filterable>
+            <i-option label="无" value="0"></i-option>
             <i-option v-for="item in this.unitConvertItem" :key="item.id" :label="item.unit_convert_name" :value="item.id"></i-option>
           </i-select>
         </Form-item>
@@ -252,13 +253,13 @@ export default {
       // 库存扣减方式
       unitTypeItem: [
         { value: 1, label: '一对一减扣' },
-        { value: 2, label: '一对多减扣' },
-        { value: 3, label: '手动减扣' }
+        { value: 2, label: '一对多减扣' }
+        // { value: 3, label: '手动减扣' }
       ],
       // 库存减扣规格
       unitConvertItem: [],
       // 是否显示单位抵扣规则
-      convertShow: true
+      convertShow: false
     }
   },
   mounted () {
@@ -343,6 +344,9 @@ export default {
       this.addGoodsForm.id = 0
       this.addGoodsForm.purchase_price = 0
       this.addGoodsForm.voltage = 0
+      this.addGoodsForm.unit = 0
+      this.addGoodsForm.unit_type = 1
+      this.addGoodsForm.unit_convert_id = 0
     },
     // 点击编辑
     clickEditRow (params) {
@@ -361,6 +365,9 @@ export default {
       this.addGoodsForm.id = params.row.id
       this.addGoodsForm.purchase_price = util.montyFormatterOutput(params.row.purchase_price)
       this.addGoodsForm.voltage = params.row.voltage
+      this.addGoodsForm.unit = params.row.unit
+      this.addGoodsForm.unit_type = params.row.unit_type
+      this.addGoodsForm.unit_convert_id = params.row.unit_convert_id
     },
     // 点击页码
     changePage (page) {
@@ -391,7 +398,6 @@ export default {
     },
     getUnitConvertList () {
       unitConvert().then(res => {
-        console.log(res)
         this.unitConvertItem = res.data.info
       })
     }

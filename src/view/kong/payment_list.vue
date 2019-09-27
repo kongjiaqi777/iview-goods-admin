@@ -2,6 +2,15 @@
   <div>
     <Card>
         <i-table :columns="paymentColumns" :data="paymentData"></i-table>
+        <Page
+        :total="totalCount"
+        :current="currentPage"
+        :page-size="pageSize"
+        style="margin-top: 50px;text-align: center;"
+        show-total
+        show-elevator
+        @on-change="changePage">
+        </Page>
     </Card>
   </div>
 </template>
@@ -56,7 +65,14 @@ export default {
         { title: '创建时间', key: 'created_at' },
         { title: '修改时间', key: 'updated_at' }
       ],
-      paymentData: []
+      paymentData: [],
+      totalCount: 0,
+      currentPage: 1,
+      pageSize: 20,
+      paymentParam: {
+        page: 1,
+        perpage: 20
+      }
     }
   },
   mounted () {
@@ -66,9 +82,17 @@ export default {
     getPaymentList () {
       getPaymentList({ 'user_type': 1 }).then(res => {
         this.paymentData = res.data.info.list
+        this.totalCount = res.data.info.pagination.total_count
+        this.currentPage = res.data.info.pagination.page
       }).catch(err => {
         console.log(err)
       })
+    },
+    changePage (page) {
+      this.currentPage = page
+      this.paymentParam.page = page
+      this.paymentParam.perpage = this.pageSize
+      this.getPaymentList()
     }
   }
 }

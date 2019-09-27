@@ -1,9 +1,17 @@
 <template>
   <div>
-     <Card>
-      <i-button type="primary" @click="showDetail=true, this.modelType=1, this.modelTitle='添加新供应商'">添加</i-button>
-      <!-- <tables ref="tables" v-model="supplierData" :columns="supplierColumns"/> -->
+      <Card>
+      <i-button type="primary" @click="clickAdd">添加</i-button>
       <i-table :columns="supplierColumns" :data="supplierData" style="margin-top: 30px;"></i-table>
+      <Page
+      :total="totalCount"
+      :current="currentPage"
+      :page-size="pageSize"
+      style="margin-top: 50px;text-align: center;"
+      show-total
+      show-elevator
+      @on-change="changePage">
+      </Page>
     </Card>
     <Modal
       v-model="showDetail"
@@ -50,15 +58,15 @@
           </i-input>
         </Form-item>
         <Form-item prop="total_cost" label="总消费">
-          <i-input type="number" v-model="addSupplierForm.total_cost" placeholder="请输入顾客在本店总消费">
+          <i-input type="text" v-model="addSupplierForm.total_cost" placeholder="请输入顾客在本店总消费">
           </i-input>
         </Form-item>
         <Form-item prop="debt" label="欠款金额">
-          <i-input type="number" v-model="addSupplierForm.debt" placeholder="请输入顾客在本店的欠款金额">
+          <i-input type="text" v-model="addSupplierForm.debt" placeholder="请输入顾客在本店的欠款金额">
           </i-input>
         </Form-item>
         <Form-item prop="repayment" label="已还款金额">
-          <i-input type="number" v-model="addSupplierForm.repayment" placeholder="请输入顾客在本店已经还款金额">
+          <i-input type="text" v-model="addSupplierForm.repayment" placeholder="请输入顾客在本店已经还款金额">
           </i-input>
         </Form-item>
         <Form-item prop="comment" label="备注信息">
@@ -70,15 +78,11 @@
   </div>
 </template>
 <script>
-// import Tables from '_c/tables'
 import { getSupplierList, addSupplierInfo, updateSupplierInfo } from '@/api/supplier'
 import * as util from '@/utils/util'
 
 export default {
   name: 'supplier_list',
-  // components: {
-  //   Tables
-  // },
   data () {
     return {
       supplierColumns: [
@@ -129,16 +133,15 @@ export default {
         {
           title: '操作',
           key: 'handle',
-          options: ['修改'],
-          button: [
-            (h, params, vm) => {
-              return h('div', [
+          render: (h, params) => {
+            return h('div',
+              [
                 h('Button', {
                   props: {
                     type: 'primary'
                   },
                   style: {
-                    width: '50%',
+                    width: '80%',
                     display: 'flex',
                     'justify-content': 'center'
                   },
@@ -162,9 +165,9 @@ export default {
                     }
                   }
                 }, '修改')
-              ])
-            }
-          ]
+              ]
+            )
+          }
         }
       ],
       // 参数
@@ -203,7 +206,14 @@ export default {
       supplierType: [
         { value: 1, label: '个体供应商' },
         { value: 2, label: '公司' }
-      ]
+      ],
+      totalCount: 0,
+      currentPage: 1,
+      pageSize: 20,
+      supplierParam: {
+        page: 1,
+        perpage: 20
+      }
     }
   },
   mounted () {
@@ -211,8 +221,10 @@ export default {
   },
   methods: {
     getSupplierListData () {
-      getSupplierList().then(res => {
+      getSupplierList(this.supplierParam).then(res => {
         this.supplierData = res.data.info.list
+        this.totalCount = res.data.info.pagination.total_count
+        this.currentPage = res.data.info.pagination.page
       }).catch(err => {
         console.log(err)
       })
@@ -277,6 +289,17 @@ export default {
       this.addSupplierForm.total_cost = util.moneyFormatterInput(this.addSupplierForm.total_cost)
       this.addSupplierForm.debt = util.moneyFormatterInput(this.addSupplierForm.debt)
       this.addSupplierForm.repayment = util.moneyFormatterInput(this.addSupplierForm.repayment)
+    },
+    changePage (page) {
+      this.currentPage = page
+      this.supplierParam.page = page
+      this.supplierParam.perpage = this.pageSize
+      this.getSupplierListData()
+    },
+    clickAdd () {
+      this.showDetail = true
+      this.modelType = 1
+      this.modelTitle = '添加新供应商'
     }
   }
 }

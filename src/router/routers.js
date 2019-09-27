@@ -64,7 +64,7 @@ export default [
         path: '/home',
         name: 'home',
         meta: {
-          title: '商品列表',
+          title: '销售商品',
           icon: 'md-home'
         },
         component: () => import('@/view/kong/goods_info')
@@ -198,6 +198,35 @@ export default [
           icon: 'md-home'
         },
         component: () => import('@/view/kong/payment_list')
+      }
+    ]
+  },
+  {
+    path: '/manage',
+    name: '配置管理',
+    component: Main,
+    meta: {
+      title: 'asyncOK',
+      icon: 'ios-book'
+    },
+    children: [
+      {
+        path: '/category_list',
+        name: '类别列表',
+        meta: {
+          title: 'asyncOK',
+          icon: 'md-home'
+        },
+        component: () => import('@/view/kong/category_list')
+      },
+      {
+        path: '/unitList',
+        name: '单位管理',
+        meta: {
+          title: 'asyncOK',
+          icon: 'md-home'
+        },
+        component: () => import('@/view/kong/unitList')
       }
     ]
   }

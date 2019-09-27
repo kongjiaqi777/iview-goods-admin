@@ -5,7 +5,6 @@ export const loginA = ({ userName, password }) => {
     'phone': userName,
     'password': password
   }
-  console.log(data)
   return axios.request({
     url: 'api/login',
     data,

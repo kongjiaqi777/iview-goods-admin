@@ -2,7 +2,6 @@ import axios from 'axios'
 import store from '@/store'
 import { getToken } from '@/libs/util' // canTurnTo
 
-const token = getToken()
 // import { Spin } from 'iview'
 const addErrorLog = errorInfo => {
   const { statusText, status, request: { responseURL } } = errorInfo
@@ -24,11 +23,9 @@ class HttpRequest {
     const config = {
       baseURL: this.baseUrl,
       Headers: {
-        'Authorization': 'Bearer' + ' ' + token,
-        // 'Access-Control-Allow-Origin': '*',
+        'Authorization': getToken(),
+        'Content-Type': 'application/json',
         'Access-Control-Allow-Headers': 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild'
-        // 'Access-Control-Allow-Methods': 'PUT,POST,GET,DELETE,OPTIONS',
-        // 'Content-Type': 'application/json;charset=utf-8'
       }
     }
     return config
@@ -64,7 +61,9 @@ class HttpRequest {
         errorInfo = {
           statusText,
           status,
-          request: { responseURL: config.url }
+          request: {
+            responseURL: config.url
+          }
         }
       }
       addErrorLog(errorInfo)

@@ -1,9 +1,17 @@
 <template>
   <div>
-     <Card>
-      <i-button type="primary" @click="showDetail=true, this.modelType=1, this.modelTitle='添加顾客'">添加</i-button>
-      <!-- <tables ref="tables" v-model="customerData" :columns="customerColumns"/> -->
+      <Card>
+      <i-button type="primary" @click="addForm">添加</i-button>
       <i-table :columns="customerColumns" :data="customerData" style="margin-top: 30px;"></i-table>
+      <Page
+        :total="totalCount"
+        :current="currentPage"
+        :page-size="pageSize"
+        style="margin-top: 50px;text-align: center;"
+        show-total
+        show-elevator
+        @on-change="changePage">
+        </Page>
     </Card>
     <Modal
       v-model="showDetail"
@@ -50,15 +58,15 @@
           </i-input>
         </Form-item>
         <Form-item prop="total_cost" label="总消费">
-          <i-input type="number" v-model="addCustomerForm.total_cost" placeholder="请输入顾客在本店总消费">
+          <i-input type="text" v-model="addCustomerForm.total_cost" placeholder="请输入顾客在本店总消费">
           </i-input>
         </Form-item>
         <Form-item prop="debt" label="欠款金额">
-          <i-input type="number" v-model="addCustomerForm.debt" placeholder="请输入顾客在本店的欠款金额">
+          <i-input type="text" v-model="addCustomerForm.debt" placeholder="请输入顾客在本店的欠款金额">
           </i-input>
         </Form-item>
         <Form-item prop="repayment" label="已还款金额">
-          <i-input type="number" v-model="addCustomerForm.repayment" placeholder="请输入顾客在本店已经还款金额">
+          <i-input type="text" v-model="addCustomerForm.repayment" placeholder="请输入顾客在本店已经还款金额">
           </i-input>
         </Form-item>
         <Form-item prop="comment" label="备注信息">
@@ -76,9 +84,6 @@ import * as util from '@/utils/util'
 
 export default {
   name: 'customer_list',
-  components: {
-    Tables
-  },
   data () {
     return {
       customerColumns: [
@@ -131,16 +136,15 @@ export default {
         {
           title: '操作',
           key: 'handle',
-          options: ['修改'],
-          button: [
-            (h, params, vm) => {
-              return h('div', [
+          render: (h, params) => {
+            return h('div',
+              [
                 h('Button', {
                   props: {
                     type: 'primary'
                   },
                   style: {
-                    width: '50%',
+                    width: '80%',
                     display: 'flex',
                     'justify-content': 'center'
                   },
@@ -166,9 +170,9 @@ export default {
                     }
                   }
                 }, '修改')
-              ])
-            }
-          ]
+              ]
+            )
+          }
         }
       ],
       // 参数
@@ -210,7 +214,14 @@ export default {
         { value: 2, label: '公司' },
         { value: 3, label: '车队' }
       ],
-      modelType: 1
+      modelType: 1,
+      totalCount: 0,
+      currentPage: 1,
+      pageSize: 20,
+      customerParam: {
+        page: 1,
+        perpage: 20
+      }
     }
   },
   mounted () {
@@ -218,8 +229,10 @@ export default {
   },
   methods: {
     getCustomerListData () {
-      getCustomerInfo().then(res => {
+      getCustomerInfo(this.customerParam).then(res => {
         this.customerData = res.data.info.list
+        this.totalCount = res.data.info.pagination.total_count
+        this.currentPage = res.data.info.pagination.page
       }).catch(err => {
         console.log(err)
       })
@@ -286,6 +299,17 @@ export default {
       this.addCustomerForm.total_cost = util.moneyFormatterInput(this.addCustomerForm.total_cost)
       this.addCustomerForm.debt = util.moneyFormatterInput(this.addCustomerForm.debt)
       this.addCustomerForm.repayment = util.moneyFormatterInput(this.addCustomerForm.repayment)
+    },
+    changePage (page) {
+      this.currentPage = page
+      this.customerParam.page = page
+      this.customerParam.perpage = this.pageSize
+      this.getCustomerListData()
+    },
+    addForm () {
+      this.showDetail = true
+      this.modelType = 1
+      this.modelTitle = '添加顾客'
     }
   }
 }

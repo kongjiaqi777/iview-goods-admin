@@ -1,26 +1,34 @@
 <template>
   <div>
-     <Card>
-      <i-button type="primary" @click="showDetail=true, this.modelType=1, this.modelTitle='添加商品类别'">添加</i-button>
-      <!-- <tables ref="tables" editable searchable search-place="top" v-model="categoryData" :columns="categoryColumns"/> -->
-      <i-table :columns="categoryColumns" :data="categoryData" style="margin-top: 30px;"></i-table>
-    </Card>
-    <Modal
-        v-model="showDetail"
-        :title="modelTitle"
-        @on-ok="AddCategorySubmit" @on-cancel="clearFormData">
-        <i-form ref="categoryForm" :model="addCategoryForm" :rules="addCategoryRule">
-            <Form-item prop="type_name" label="类别">
-                <i-input type="text" v-model="addCategoryForm.type_name" placeholder="请输入类别名称">
-                </i-input>
-            </Form-item>
-            <Form-item prop="comment" label="备注信息">
-                <i-input type="text" v-model="addCategoryForm.comment" placeholder="备注信息">
-                </i-input>
-            </Form-item>
-        </i-form>
-    </Modal>
-  </div>
+    <Card>
+    <i-button type="primary" @click="showDetail=true, this.modelType=1, this.modelTitle='添加商品类别'">添加</i-button>
+    <i-table :columns="categoryColumns" :data="categoryData" style="margin-top: 30px;"></i-table>
+    <Page
+      :total="totalCount"
+      :current="currentPage"
+      :page-size="pageSize"
+      style="margin-top: 50px;text-align: center;"
+      show-total
+      show-elevator
+      @on-change="changePage">
+      </Page>
+  </Card>
+  <Modal
+      v-model="showDetail"
+      :title="modelTitle"
+      @on-ok="AddCategorySubmit" @on-cancel="clearFormData">
+      <i-form ref="categoryForm" :model="addCategoryForm" :rules="addCategoryRule">
+        <Form-item prop="type_name" label="类别">
+          <i-input type="text" v-model="addCategoryForm.type_name" placeholder="请输入类别名称">
+          </i-input>
+        </Form-item>
+        <Form-item prop="comment" label="备注信息">
+          <i-input type="text" v-model="addCategoryForm.comment" placeholder="备注信息">
+          </i-input>
+        </Form-item>
+      </i-form>
+  </Modal>
+</div>
 </template>
 <script>
 // import Tables from '_c/tables'
@@ -28,9 +36,6 @@ import { getCategoryList, addCategory, modifyCategory } from '@/api/goods'
 
 export default {
   name: 'category_list',
-  // components: {
-  //   Tables
-  // },
   data () {
     return {
       categoryColumns: [ // 类别列表项
@@ -40,16 +45,15 @@ export default {
         {
           title: '操作',
           key: 'handle',
-          options: ['修改'],
-          button: [
-            (h, params, vm) => {
-              return h('div', [
+          render: (h, params) => {
+            return h('div',
+              [
                 h('Button', {
                   props: {
                     type: 'primary'
                   },
                   style: {
-                    width: '20%',
+                    width: '80%',
                     display: 'flex',
                     'justify-content': 'center'
                   },
@@ -64,9 +68,9 @@ export default {
                     }
                   }
                 }, '修改')
-              ])
-            }
-          ]
+              ]
+            )
+          }
         }
       ],
       categoryData: [], // 列表数据
@@ -85,7 +89,14 @@ export default {
       },
       showDetail: false, // 对话框线索
       modelTitle: '', // 对话框标题
-      modelType: 1 // 对话框类别 1添加 2更新
+      modelType: 1, // 对话框类别 1添加 2更新
+      totalCount: 0,
+      currentPage: 1,
+      pageSize: 20,
+      categoryParam: {
+        page: 1,
+        perpage: 10
+      }
     }
   },
   mounted () {
@@ -94,8 +105,10 @@ export default {
   methods: {
     // 获取列表数据
     getCategoryListData () {
-      getCategoryList().then(res => {
-        this.categoryData = res.data.info
+      getCategoryList(this.categoryParam).then(res => {
+        this.categoryData = res.data.info.list
+        this.totalCount = res.data.info.pagination.total_count
+        this.currentPage = res.data.info.pagination.page
       }).catch(err => {
         console.log(err)
       })
@@ -148,6 +161,12 @@ export default {
       this.addCategoryForm.type_name = ''
       this.addCategoryForm.comment = ''
       this.addCategoryForm.id = 0
+    },
+    changePage (page) {
+      this.currentPage = page
+      this.categoryParam.page = page
+      this.categoryParam.perpage = this.pageSize
+      this.getCategoryListData()
     }
   }
 }

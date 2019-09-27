@@ -10,6 +10,7 @@ import {
   // getUnreadCount
 } from '@/api/user'
 import { setToken, getToken } from '@/libs/util'
+import { Message } from 'iview'
 
 export default {
   state: {
@@ -81,10 +82,14 @@ export default {
           userName,
           password
         }).then(res => {
-          const data = res.data.info
-          console.log(data.token)
-          commit('setToken', data.token)
-          resolve()
+          const data = res.data
+          if (data.code === 0) {
+            Message.info('登录成功!')
+            commit('setToken', data.info.token)
+            resolve()
+          } else {
+            Message.info(data.msg)
+          }
         }).catch(err => {
           reject(err)
         })
@@ -96,6 +101,7 @@ export default {
         logout(state.token).then(() => {
           commit('setToken', '')
           commit('setAccess', [])
+          Message.info('推出登录成功')
           resolve()
         }).catch(err => {
           reject(err)
@@ -111,13 +117,30 @@ export default {
       return new Promise((resolve, reject) => {
         try {
           getUserInfo(state.token).then(res => {
-            const data = res.data
-            commit('setAvatar', data.avatar)
-            commit('setUserName', data.name)
-            commit('setUserId', data.id)
-            commit('setAccess', ['super_admin']) // data.access
-            commit('setHasGetInfo', true)
-            resolve(data)
+            if (res.data.code === 0) {
+              const data = res.data
+              commit('setAvatar', data.avatar)
+              commit('setUserName', data.name)
+              commit('setUserId', data.id)
+              commit('setAccess', ['super_admin']) // data.access
+              commit('setHasGetInfo', true)
+              resolve(data)
+            } else {
+              // 登出
+              commit('setAvatar', 'https://file.iviewui.com/dist/a0e88e83800f138b94d2414621bd9704.png')
+              commit('setUserName', 'kong123')
+              commit('setUserId', 2)
+              commit('setAccess', ['super_admin']) // data.access
+              commit('setHasGetInfo', true)
+              const par = {
+                name: 'kong123',
+                user_id: 2,
+                access: ['super_admin', 'admin'],
+                token: 'super_admin',
+                avatar: 'https://file.iviewui.com/dist/a0e88e83800f138b94d2414621bd9704.png'
+              }
+              resolve(par)
+            }
           }).catch(err => {
             reject(err)
           })

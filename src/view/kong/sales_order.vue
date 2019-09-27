@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Card>
+      <Card>
       <i-button type="primary" @click="addSalesOrderFunc">添加销售订单</i-button>
       <i-table :columns="columns" :data="tableData" style="margin-top: 30px;"></i-table>
       <Page
@@ -21,63 +21,48 @@
     </Modal>
     <Modal v-model="showUpdateDetail" title="修改订单信息" @on-ok="AddOrder" @on-cancel="clearFormData" width="900">
       <i-form ref="addSalesOrder" :model="addSalesOrderForm" :rules="addSalesOrderRules" :label-width="100" style="width:813px;padding-top:50px;">
-        <!-- 客户信息 -->
-        <Form-item label="客户信息" prop="customer_id">
-          <i-select v-model="addSalesOrderForm.customer_id" placeholder="请选择客户">
-            <i-option v-for="item in customerData" :key="item.id" :value="item.id" :label="item.name"></i-option>
-          </i-select>
-        </Form-item>
+          <Form-item label="客户信息" prop="customer_id">
+            <i-select v-model="addSalesOrderForm.customer_id" placeholder="请选择客户">
+              <i-option v-for="item in customerData" :key="item.id" :value="item.id" :label="item.name"></i-option>
+            </i-select>
+          </Form-item>
 
-        <!-- 商品销售记录 -->
-        <i-table borderd :columns="saleRecordColumn" :data="saleRecord" style="margin-top:50px;margin-bottom:50px;">
-        </i-table>
+          <i-table borderd :columns="saleRecordColumn" :data="saleRecord" style="margin-top:50px;margin-bottom:50px;">
+          </i-table>
 
-        <!-- 总价 -->
-        <Form-item label="总价" prop="total_price_display">
-          <i-input type="text" v-model="addSalesOrderForm.total_price_display" disabled></i-input>
-        </Form-item>
-
-        <!-- 折扣 -->
-        <Form-item label="折扣金额" prop="discount">
-          <i-input type="text" v-model="addSalesOrderForm.discount" disabled></i-input>
-        </Form-item>
-
-        <!-- 付款方式 -->
-        <Form-item label="付款方式" prop="pay_way">
-          <RadioGroup v-model="addSalesOrderForm.pay_way">
-            <Radio v-for="item in payWay" :label="item.value" :key="item.value">
-              <span>{{item.label}}</span>
-            </Radio>
-          </RadioGroup>
-        </Form-item>
-
-        <!-- 是否付款 -->
-        <Form-item label="是否付款" prop="is_pay_off">
-          <RadioGroup v-model="addSalesOrderForm.is_pay_off">
-            <Radio v-for="item in payOff" :label="item.value" :key="item.value">
-              <span>{{item.label}}</span>
-            </Radio>
-          </RadioGroup>
-        </Form-item>
-
-        <!-- 已付金额 -->
-        <Form-item label="已付金额" prop="pay_number">
-          <i-input type="text" v-model="addSalesOrderForm.pay_number" onblur="calDiscount"></i-input>
-        </Form-item>
-
-        <!-- 图片 -->
-        <Form-item label="凭证" prop="photo">
-          <i-input type="text" v-model="addSalesOrderForm.photo"></i-input>
-        </Form-item>
-
-        <!-- 备注 -->
-        <Form-item label="备注信息" prop="comment">
-          <i-input type="text" v-model="addSalesOrderForm.comment"></i-input>
-        </Form-item>
-        <!-- <Form-item>
-          <i-button @click="AddOrder" type="primary">确认添加</i-button>
-          <i-button style="margin-left: 8px">取消</i-button>
-        </Form-item> -->
+          <Form-item label="总价" prop="total_price_display">
+            <i-input type="text" v-model="addSalesOrderForm.total_price_display" disabled></i-input>
+          </Form-item>
+          <Form-item label="折扣金额" prop="discount">
+            <i-input type="text" v-model="addSalesOrderForm.discount" disabled></i-input>
+          </Form-item>
+          <Form-item label="付款方式" prop="pay_way">
+            <RadioGroup v-model="addSalesOrderForm.pay_way">
+              <Radio v-for="item in payWay" :label="item.value" :key="item.value">
+                <span>{{item.label}}</span>
+              </Radio>
+            </RadioGroup>
+          </Form-item>
+          <Form-item label="是否付款" prop="is_pay_off">
+            <RadioGroup v-model="addSalesOrderForm.is_pay_off">
+              <Radio v-for="item in payOff" :label="item.value" :key="item.value">
+                <span>{{item.label}}</span>
+              </Radio>
+            </RadioGroup>
+          </Form-item>
+          <Form-item label="已付金额" prop="pay_number">
+            <i-input type="text" v-model="addSalesOrderForm.pay_number" onblur="calDiscount"></i-input>
+          </Form-item>
+          <Form-item label="凭证" prop="photo">
+            <i-input type="text" v-model="addSalesOrderForm.photo"></i-input>
+          </Form-item>
+          <Form-item label="备注信息" prop="comment">
+            <i-input type="text" v-model="addSalesOrderForm.comment"></i-input>
+          </Form-item>
+          <!-- <Form-item>
+            <i-button @click="AddOrder" type="primary">确认添加</i-button>
+            <i-button style="margin-left: 8px">取消</i-button>
+          </Form-item> -->
         </i-form>
     </Modal>
   </div>
@@ -341,12 +326,13 @@ export default {
                 },
                 on: {
                   'on-change': (event) => { // select改变事件
-                    // this.saleRecord[params.index].unit = event
+                    this.saleRecord[params.index].unit = event
                     // let obj = this.unitList.find(function (x) {
                     //   if (x.id === event) {
                     //     return x
                     //   }
                     // })
+                    // this.saleRecord[params.index].unit = obj.unit
                   }
                 }
               },
