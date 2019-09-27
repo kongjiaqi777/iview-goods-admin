@@ -24,8 +24,7 @@ class HttpRequest {
     const config = {
       baseURL: this.baseUrl,
       Headers: {
-        // 'Authorization': this.token
-        'Authorization': 'Bearer ' + token,
+        'Authorization': 'Bearer' + ' ' + token,
         // 'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild'
         // 'Access-Control-Allow-Methods': 'PUT,POST,GET,DELETE,OPTIONS',
@@ -74,9 +73,7 @@ class HttpRequest {
   }
   request (options) {
     const instance = axios.create()
-    // instance.defaults.headers.Authorization = 'Bearer' + this.token
     options = Object.assign(this.getInsideConfig(), options)
-    console.log(options)
     this.interceptors(instance, options.url)
     return instance(options)
   }
