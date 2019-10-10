@@ -22,7 +22,7 @@
           <i-input type="text" v-model="addSupplierForm.name" placeholder="请输入顾客姓名">
           </i-input>
         </Form-item>
-        <Form-item prop="type" label="顾客类别">
+        <Form-item prop="type" label="供应商类别">
           <RadioGroup v-model="addSupplierForm.type">
               <Radio v-for="item in supplierType" :label="item.value" :key="item.value">
                 <span>{{item.label}}</span>
@@ -232,6 +232,7 @@ export default {
     AddSupplierSubmit () {
       this.$refs.supplierForm.validate((valid) => {
         if (valid) {
+          console.log(this.addSupplierForm)
           this.FormatterInput()
           if (this.modelType === 1) {
             addSupplierInfo(this.addSupplierForm).then(res => {

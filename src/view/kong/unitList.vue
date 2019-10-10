@@ -15,7 +15,7 @@
     </Card>
   </div>
 </template>
-      
+
 <script>
 import { getUnitList } from '@/api/customer'
 
@@ -24,8 +24,8 @@ export default {
   data () {
     return {
       unitColumns: [
-          { title: '编号', key: 'id', sortable: true },
-          { title: '单位名称', key: 'unit_name' },
+        { title: '编号', key: 'id', sortable: true },
+        { title: '单位名称', key: 'unit_name' }
       ],
       unitData: [],
       totalCount: 0,
@@ -39,11 +39,11 @@ export default {
   methods: {
     getUnitListData () {
       getUnitList().then(res => {
-          this.unitData = res.data.info.list
-          this.totalCount = res.data.info.pagination.total_count
-          this.currentPage = res.data.info.pagination.page
+        this.unitData = res.data.info.list
+        this.totalCount = res.data.info.pagination.total_count
+        this.currentPage = res.data.info.pagination.page
       }).catch(err => {
-          console.log(err)
+        console.log(err)
       })
     },
     changePage () {

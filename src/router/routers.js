@@ -27,117 +27,62 @@ export default [
     },
     component: () => import('@/view/login/login.vue')
   },
-  // {
-  //   path: '/',
-  //   name: '_home',
-  //   redirect: '/home',
-  //   component: Main,
-  //   meta: {
-  //     hideInMenu: true,
-  //     notCache: true
-  //   },
-  //   children: [
-  //     {
-  //       path: '/home',
-  //       name: 'home',
-  //       meta: {
-  //         hideInMenu: true,
-  //         title: '首页',
-  //         notCache: true,
-  //         icon: 'md-home'
-  //       },
-  //       component: () => import('@/view/kong/goods_info')
-  //     }
-  //   ]
-  // },
   {
     path: '/home',
-    name: '商品列表',
+    name: '商品管理',
     component: Main,
     redirect: '/home',
     meta: {
       title: '商品列表',
-      icon: 'ios-book'
+      icon: 'md-apps'
     },
     children: [
       {
         path: '/home',
-        name: 'home',
+        name: '销售商品列表',
         meta: {
-          title: '销售商品',
-          icon: 'md-home'
+          title: 'goods',
+          icon: 'md-car'
+        },
+        component: () => import('@/view/kong/goods_info')
+      },
+      {
+        path: '/home',
+        name: '旧物商品列表',
+        meta: {
+          title: 'old',
+          icon: 'md-basket'
         },
         component: () => import('@/view/kong/goods_info')
       }
     ]
   },
   {
-    path: '/sales_order',
-    name: '销售订单',
+    path: '/purchase_order',
+    name: '订单管理',
     component: Main,
     meta: {
       title: 'asyncOK',
-      icon: 'ios-book'
+      icon: 'md-lock'
     },
     children: [
       {
         path: '/sales_order',
-        name: '订单列表',
+        name: '销售订单',
         meta: {
           title: 'asyncOK',
-          icon: 'md-home'
+          icon: 'md-magnet'
         },
         component: () => import('@/view/kong/sales_order')
-      }
-      // },
-      // {
-      //   path: '/add_sales_order',
-      //   name: '添加订单',
-      //   meta: {
-      //     title: 'asyncOK',
-      //     icon: 'md-home'
-      //   },
-      //   component: () => import('@/view/kong/add_sales_order')
-      // }
-    ]
-  },
-  {
-    path: '/purchase_order',
-    name: '采购订单',
-    component: Main,
-    meta: {
-      title: 'asyncOK',
-      icon: 'ios-book'
-    },
-    children: [
+      },
       {
         path: '/purchase_order',
         name: '采购订单',
         meta: {
           title: 'asyncOK',
-          icon: 'md-home'
+          icon: 'md-list'
         },
         component: () => import('@/view/kong/purchase_order')
-      }
-    ]
-  },
-  {
-    path: '/category_list',
-    name: '类别管理',
-    component: Main,
-    meta: {
-      title: 'asyncOK',
-      icon: 'ios-book'
-    },
-    children: [
-      {
-        path: '/category_list',
-        name: '类别列表',
-        meta: {
-          title: 'asyncOK',
-          icon: 'md-home'
-        },
-        component: () => import('@/view/kong/category_list')
       }
     ]
   },
@@ -147,7 +92,7 @@ export default [
     component: Main,
     meta: {
       title: 'asyncOK',
-      icon: 'ios-book'
+      icon: 'md-contacts'
     },
     children: [
       {
@@ -155,7 +100,7 @@ export default [
         name: '顾客管理',
         meta: {
           title: 'asyncOK',
-          icon: 'md-home'
+          icon: 'md-contacts'
         },
         component: () => import('@/view/kong/customer_list')
       }
@@ -167,7 +112,7 @@ export default [
     component: Main,
     meta: {
       title: 'asyncOK',
-      icon: 'ios-book'
+      icon: 'md-cart'
     },
     children: [
       {
@@ -175,7 +120,7 @@ export default [
         name: '供应商管理',
         meta: {
           title: 'asyncOK',
-          icon: 'md-home'
+          icon: 'md-cart'
         },
         component: () => import('@/view/kong/supplier_list')
       }
@@ -187,7 +132,7 @@ export default [
     component: Main,
     meta: {
       title: 'asyncOK',
-      icon: 'ios-book'
+      icon: 'md-calculator'
     },
     children: [
       {
@@ -195,7 +140,7 @@ export default [
         name: '还款记录',
         meta: {
           title: 'asyncOK',
-          icon: 'md-home'
+          icon: 'md-calculator'
         },
         component: () => import('@/view/kong/payment_list')
       }
@@ -207,7 +152,7 @@ export default [
     component: Main,
     meta: {
       title: 'asyncOK',
-      icon: 'ios-book'
+      icon: 'md-build'
     },
     children: [
       {
@@ -215,7 +160,7 @@ export default [
         name: '类别列表',
         meta: {
           title: 'asyncOK',
-          icon: 'md-home'
+          icon: 'md-cog'
         },
         component: () => import('@/view/kong/category_list')
       },
@@ -224,7 +169,7 @@ export default [
         name: '单位管理',
         meta: {
           title: 'asyncOK',
-          icon: 'md-home'
+          icon: 'md-cube'
         },
         component: () => import('@/view/kong/unitList')
       }

@@ -17,9 +17,9 @@
         v-model="showDetail"
         title="订单详情"
         @on-ok="showDetail=false" width="800">
-        <i-table ref="record_table" v-model="purchaseRecordData" :columns="purchaseRecordColumns"></i-table>
+        <i-table ref="record_table" :data="purchaseRecordData" :columns="purchaseRecordColumns"></i-table>
     </Modal>
-    <Modal v-model="showUpdateDetail" title="修改订单信息" @on-ok="AddOrder" @on-cancel="clearFormData" width="800">
+    <Modal v-model="showUpdateDetail" title="修改订单信息" @on-ok="AddOrder" @on-cancel="clearFormData" width="900">
       <i-form ref="addPurshaseOrder" :model="addPurchaseOrderForm" :rules="addPurchaseOrderRules" :label-width="100" style="width:713px;padding-top:50px;">
           <Form-item label="客户信息" prop="customer_id">
             <i-select v-model="addPurchaseOrderForm.supplier_id" placeholder="请选择客户">
@@ -98,8 +98,24 @@ export default {
             )
           }
         },
-        { title: '付款方式', key: 'pay_way' },
-        { title: '是否付款', key: 'is_pay_off' },
+        {
+          title: '付款方式',
+          key: 'pay_way',
+          render: (h, params) => {
+            return h('div',
+              util.showPayWay(params.row.pay_way)
+            )
+          }
+        },
+        {
+          title: '是否付款',
+          key: 'is_pay_off',
+          render: (h, params) => {
+            return h('div',
+              util.showPayOff(params.row.is_pay_off)
+            )
+          }
+        },
         {
           title: '已付金额',
           key: 'pay_number',
@@ -133,7 +149,22 @@ export default {
                       this.showDetail = true
                     }
                   }
-                }, '修改')
+                }, '查看详情'),
+                h('Button', {
+                  props: {
+                    type: 'success'
+                  },
+                  style: {
+                    width: '80%',
+                    display: 'flex',
+                    'justify-content': 'center'
+                  },
+                  on: {
+                    click: () => {
+                      this.showPurchaseOrderDetail(params.row)
+                    }
+                  }
+                }, '修改订单')
               ]
             )
           }
@@ -182,9 +213,9 @@ export default {
       addPurchaseOrderForm: {
         supplier_id: 0, // 客户ID
         purchase_record: [],
-        pay_way: 0, // 付款方式
+        pay_way: 1, // 付款方式
         discount: 0, // 折扣
-        is_pay_off: 0, // 是否全部付款
+        is_pay_off: 1, // 是否全部付款
         pay_number: 0, // 付款金额
         total_price: 0,
         photo: '',
@@ -213,7 +244,7 @@ export default {
       purchaseRecord: [
         {
           goods_id: 0,
-          num: 0,
+          num: 1,
           charge_price: 0,
           charge_price_display: 0
         }
@@ -241,6 +272,14 @@ export default {
                 on: {
                   'on-change': (event) => { // select改变事件
                     this.purchaseRecord[params.index].goods_id = event
+                    let obj = this.goodsList.find(function (x) {
+                      if (x.id === event) {
+                        return x
+                      }
+                    })
+                    this.purchaseRecord[params.index].charge_price = obj.purchase_price
+                    this.purchaseRecord[params.index].charge_price_display = util.montyFormatterOutput(obj.purchase_price)
+                    this.calPrice()
                   }
                 }
               },
@@ -276,7 +315,7 @@ export default {
           }
         },
         {
-          title: '售价',
+          title: '采购价格',
           key: 'charge_price_display',
           width: 150,
           align: 'center',
@@ -330,7 +369,7 @@ export default {
                       }
                       this.purchaseRecord.push({
                         goods_id: 0,
-                        num: 0,
+                        num: 1,
                         charge_price: 0,
                         charge_price_display: 0
                       })
@@ -388,7 +427,6 @@ export default {
     // 获取采购订单中的商品记录
     getPurchaseRecordItem: function (order_code) {
       getPurchaseRecord({ 'purchase_order_code': order_code }).then(res => {
-        console.log(order_code)
         this.purchaseRecordData = res.data.info
       }).catch(err => {
         console.log(err)
@@ -397,18 +435,22 @@ export default {
     // 添加采购订单
     AddOrder: function () {
       this.$refs.addPurshaseOrder.validate((valid) => {
+        console.log(valid)
         if (valid) {
           this.validateRecordArray()
           // 价钱格式化
+          console.log('4555')
           this.addPurchaseOrderForm.purchase_record = this.purchaseRecord
-          this.addPurchaseOrderForm.total_price = util.moneyFormatterInput(this.addSalesOrderForm.total_price)
+          this.addPurchaseOrderForm.total_price = util.moneyFormatterInput(this.addPurchaseOrderForm.total_price)
           // 重新计算总价
           this.calPrice()
           // 请求方法
+          console.log(this.addPurchaseOrderForm)
+          console.log('234')
           addPurchaseOrder(this.addPurchaseOrderForm).then(res => {
             if (res.data.code === 0) {
               this.$Message.success('添加成功!')
-              this.getPurchaseOrder()
+              this.getPurchaseOrderData()
             } else {
               this.$Message.error('添加失败请重试!')
             }
@@ -487,6 +529,38 @@ export default {
     clickAdd () {
       this.modelType = 1
       this.modelTitle = '添加采购订单'
+      this.showUpdateDetail = true
+    },
+    showPurchaseOrderDetail (rowData) {
+      getPurchaseRecord({ 'purchase_order_code': rowData.order_code }).then(res => {
+        let record = res.data.info
+        let purchaseRecordTmp = []
+        record.forEach(function (value, index, array) {
+          purchaseRecordTmp.push({
+            goods_id: value.goods_id,
+            num: parseInt(value.num),
+            charge_price: parseInt(value.charge_price),
+            charge_price_display: util.montyFormatterOutput(parseInt(value.charge_price))
+          })
+        })
+        this.purchaseRecord = purchaseRecordTmp
+        this.addPurchaseOrderForm.purchase_record = purchaseRecordTmp
+      }).catch(err => {
+        console.log(err)
+      })
+      this.addPurchaseOrderForm.id = rowData.id
+      this.addPurchaseOrderForm.supplier_id = rowData.supplier_id
+      this.addPurchaseOrderForm.purchase_record = rowData.purchase_record
+      this.addPurchaseOrderForm.pay_way = rowData.pay_way
+      this.addPurchaseOrderForm.discount = util.montyFormatterOutput(rowData.discount)
+      this.addPurchaseOrderForm.is_pay_off = rowData.is_pay_off
+      this.addPurchaseOrderForm.pay_number = util.montyFormatterOutput(rowData.pay_number)
+      this.addPurchaseOrderForm.total_price = rowData.total_price
+      this.addPurchaseOrderForm.total_price_display = util.montyFormatterOutput(rowData.total_price)
+      this.addPurchaseOrderForm.photo = rowData.photo
+      this.addPurchaseOrderForm.comment = rowData.comment
+      this.modelType = 2
+      this.modelTitle = '修改订单信息'
       this.showUpdateDetail = true
     }
   }

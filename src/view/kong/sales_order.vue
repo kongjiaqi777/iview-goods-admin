@@ -38,14 +38,14 @@
           </Form-item>
           <Form-item label="付款方式" prop="pay_way">
             <RadioGroup v-model="addSalesOrderForm.pay_way">
-              <Radio v-for="item in payWay" :label="item.value" :key="item.value">
+              <Radio v-for="item in this.payWay" :label="item.value" :key="item.value">
                 <span>{{item.label}}</span>
               </Radio>
             </RadioGroup>
           </Form-item>
           <Form-item label="是否付款" prop="is_pay_off">
             <RadioGroup v-model="addSalesOrderForm.is_pay_off">
-              <Radio v-for="item in payOff" :label="item.value" :key="item.value">
+              <Radio v-for="item in this.payOff" :label="item.value" :key="item.value">
                 <span>{{item.label}}</span>
               </Radio>
             </RadioGroup>
@@ -69,8 +69,9 @@
 </template>
 <script>
 import { getSalesOrder, getSalesRecord, addSalesOrder } from '@/api/order'
-import { getCustomerInfo } from '@/api/customer'
+import { getCustomerInfo, unitSuggest } from '@/api/customer'
 import { getGoodsInfo } from '@/api/goods'
+
 import * as util from '@/utils/util'
 
 export default {
@@ -242,7 +243,7 @@ export default {
       saleRecord: [
         {
           goods_id: 0,
-          num: 0,
+          num: 1,
           unit: 0,
           sales_price: 0,
           sales_price_display: 0
@@ -259,7 +260,7 @@ export default {
         {
           title: '商品名称',
           key: 'goods_id',
-          width: 300,
+          width: 200,
           align: 'center',
           render: (h, params) => {
             return h('Select',
@@ -276,8 +277,10 @@ export default {
                         return x
                       }
                     })
+                    this.saleRecord[params.index].unit = obj.unit
                     this.saleRecord[params.index].sales_price = obj.sale_price
                     this.saleRecord[params.index].sales_price_display = util.montyFormatterOutput(obj.sale_price)
+                    this.calPrice()
                   }
                 }
               },
@@ -294,7 +297,7 @@ export default {
         {
           title: '数量',
           key: 'num',
-          width: 150,
+          width: 100,
           align: 'center',
           render: (h, params) => {
             return h('Input', {
@@ -327,12 +330,13 @@ export default {
                 on: {
                   'on-change': (event) => { // select改变事件
                     this.saleRecord[params.index].unit = event
-                    // let obj = this.unitList.find(function (x) {
-                    //   if (x.id === event) {
-                    //     return x
-                    //   }
-                    // })
-                    // this.saleRecord[params.index].unit = obj.unit
+                    let obj = this.unitList.find(function (x) {
+                      if (x.id === event) {
+                        return x
+                      }
+                    })
+                    this.saleRecord[params.index].unit = obj.id
+                    this.calPrice()
                   }
                 }
               },
@@ -341,7 +345,7 @@ export default {
                   props: {
                     value: val.id
                   }
-                }, val.name)
+                }, val.unit_name)
               })
             )
           }
@@ -401,7 +405,7 @@ export default {
                       }
                       this.saleRecord.push({
                         goods_id: 0,
-                        num: 0,
+                        num: 1,
                         sales_price: 0,
                         sales_price_display: 0
                       })
@@ -450,6 +454,7 @@ export default {
     this.getSalesOrderList()
     this.getCustomerInfo()
     this.getGoodsInfoList()
+    this.getUnitSuggest()
   },
   methods: {
     // 获取订单列表
@@ -495,7 +500,6 @@ export default {
     },
     // 添加订单
     AddOrder () {
-      console.log(this.addSalesOrderForm)
       // 先验证saleRecord
       this.$refs.addSalesOrder.validate((valid) => {
         if (valid) {
@@ -616,6 +620,12 @@ export default {
       if (this.addSalesOrderForm.is_pay_off === 1) {
         this.addSalesOrderForm.discount = this.addSalesOrderForm.total_price - this.addSalesOrderForm.pay_number
       }
+    },
+    // 单位
+    getUnitSuggest () {
+      unitSuggest().then(res => {
+        this.unitList = res.data.info
+      })
     }
   }
 }
