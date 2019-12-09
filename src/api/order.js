@@ -9,7 +9,7 @@ export const getSalesOrder = (data) => {
   })
 }
 
-// 销售订单记录
+// 销售记录
 export const getSalesRecord = (data) => {
   return axios.request({
     url: 'v1/sales/list',
@@ -45,10 +45,28 @@ export const addSalesOrder = (info) => {
   })
 }
 
-// 添加销售订单
+// 添加购买订单
 export const addPurchaseOrder = (info) => {
   return axios.request({
     url: 'v1/order/add_purchase_order',
+    method: 'post',
+    data: info
+  })
+}
+
+// 修改销售订单
+export const updateSalesOrder = (info) => {
+  return axios.request({
+    url: '',
+    method: 'post',
+    data: info
+  })
+}
+
+// 修改购买订单
+export const updatePurchaseOrder = (info) => {
+  return axios.request({
+    url: '',
     method: 'post',
     data: info
   })

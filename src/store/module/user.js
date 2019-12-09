@@ -1,5 +1,5 @@
 import {
-  loginA,
+  login,
   logout,
   getUserInfo
   // getMessage,
@@ -78,10 +78,11 @@ export default {
     handleLogin ({ commit }, { userName, password }) {
       // userName = userName.trim()
       return new Promise((resolve, reject) => {
-        loginA({
-          userName,
-          password
-        }).then(res => {
+        const info = {
+          'phone': userName,
+          'password': password
+        }
+        login(info).then(res => {
           const data = res.data
           if (data.code === 0) {
             Message.info('登录成功!')
