@@ -116,8 +116,13 @@ export default {
     // 获取用户相关信息
     getUserInfo ({ state, commit }) {
       return new Promise((resolve, reject) => {
+        console.log(state.token)
         try {
-          getUserInfo(state.token).then(res => {
+          // _this.userToken = 'Bearer ' + res.data.data.body.token;
+          // 将用户token保存到vuex中
+          // _this.changeLogin({ Authorization: _this.userToken });
+          let userToken = 'Bearer ' + state.token
+          getUserInfo({'Authorization': userToken}).then(res => {
             if (res.data.code === 0) {
               const data = res.data
               commit('setAvatar', data.avatar)
