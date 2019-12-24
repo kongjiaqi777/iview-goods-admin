@@ -75,27 +75,40 @@ export default {
   // },
   actions: {
     // 登录
-    handleLogin ({ commit }, { userName, password }) {
-      // userName = userName.trim()
+    LoginByUsername ({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
-        const info = {
-          'phone': userName,
-          'password': password
-        }
-        login(info).then(res => {
-          const data = res.data
-          if (data.code === 0) {
-            Message.info('登录成功!')
-            commit('setToken', data.info.token)
-            resolve()
-          } else {
-            Message.info(data.msg)
-          }
-        }).catch(err => {
-          reject(err)
+        login(userInfo).then(response => {
+          const data = response.data
+          console.log(data)
+          // Cookies.set('Token', response.data.token) //登录成功后将token存储在cookie之中
+          commit('SET_TOKEN', data.token)
+          resolve()
+        }).catch(error => {
+          reject(error)
         })
       })
     },
+    // handleLogin ({ commit }, { userName, password }) {
+    //   // userName = userName.trim()
+    //   return new Promise((resolve, reject) => {
+    //     const info = {
+    //       'phone': userName,
+    //       'password': password
+    //     }
+    //     login(info).then(res => {
+    //       const data = res.data
+    //       if (data.code === 0) {
+    //         Message.info('登录成功!')
+    //         commit('setToken', data.info.token)
+    //         resolve()
+    //       } else {
+    //         Message.info(data.msg)
+    //       }
+    //     }).catch(err => {
+    //       reject(err)
+    //     })
+    //   })
+    // },
     // 退出登录
     handleLogOut ({ state, commit }) {
       return new Promise((resolve, reject) => {
