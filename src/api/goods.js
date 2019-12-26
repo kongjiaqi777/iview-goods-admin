@@ -5,7 +5,7 @@ export const getGoodsInfo = (data) => {
   return axios.request({
     url: 'v1/goods/list',
     method: 'get',
-    params: data
+    params: parFilter(data)
   })
 }
 
@@ -61,4 +61,27 @@ export const suggestCategory = (info) => {
     method: 'post',
     data: info
   })
+}
+
+// 商品名称suggest
+export const suggestGoods = (info) => {
+  return axios.request({
+    url: 'v1/goods/suggest',
+    method: 'post',
+    data: info
+  })
+}
+
+/**
+ * 过滤对象中的空值
+ *
+ * @params obj 需要过滤的对象
+ */
+const parFilter = function (obj) {
+  Object.keys(obj).forEach(function (o) {
+    if (obj[o] === '' || obj[o] === undefined || obj[o] === null || obj[o] === 0) {
+      delete obj[o]
+    }
+  })
+  return obj
 }

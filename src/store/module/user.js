@@ -81,7 +81,7 @@ export default {
           const data = response.data
           console.log(data)
           // Cookies.set('Token', response.data.token) //登录成功后将token存储在cookie之中
-          commit('SET_TOKEN', data.token)
+          commit('setToken', data.token)
           resolve()
         }).catch(error => {
           reject(error)
@@ -135,7 +135,7 @@ export default {
           // 将用户token保存到vuex中
           // _this.changeLogin({ Authorization: _this.userToken });
           let userToken = 'Bearer ' + state.token
-          getUserInfo({'Authorization': userToken}).then(res => {
+          getUserInfo({ 'Authorization': userToken }).then(res => {
             if (res.data.code === 0) {
               const data = res.data
               commit('setAvatar', data.avatar)
