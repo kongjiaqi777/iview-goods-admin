@@ -1,23 +1,23 @@
 <template>
-  <Form ref="loginForm" :model="form" :rules="rules" @keydown.enter.native="handleSubmit">
-    <FormItem prop="userName">
-      <Input v-model="form.userName" placeholder="请输入用户名">
+  <i-form ref="loginForm" :model="form" :rules="rules" @keydown.enter.native="handleSubmit">
+    <Form-item prop="userName">
+      <i-input v-model="form.userName" placeholder="请输入用户名">
         <span slot="prepend">
           <Icon :size="16" type="ios-person"></Icon>
         </span>
-      </Input>
-    </FormItem>
-    <FormItem prop="password">
-      <Input type="password" v-model="form.password" placeholder="请输入密码">
+      </i-input>
+    </Form-item>
+    <Form-item prop="password">
+      <i-input type="password" v-model="form.password" placeholder="请输入密码">
         <span slot="prepend">
           <Icon :size="14" type="md-lock"></Icon>
         </span>
-      </Input>
-    </FormItem>
-    <FormItem>
+      </i-input>
+    </Form-item>
+    <Form-item>
       <Button @click="handleSubmit" type="primary" long>登录</Button>
-    </FormItem>
-  </Form>
+    </Form-item>
+  </i-form>
 </template>
 <script>
 export default {

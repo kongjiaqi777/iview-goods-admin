@@ -1,7 +1,7 @@
 <template>
   <div>
     <Card>
-        <i-form ref="goodsParam" :model="goodsParam" :label-width="80" inline>
+        <i-form ref="goodsParam" :model="goodsParam" :label-width="70" inline>
           <!-- 商品类别 -->
           <Form-item prop="category_id" label="商品类别">
             <i-select v-model="goodsParam.category_id" placeholder="请选择商品类别" filterable clearable>
@@ -9,11 +9,20 @@
             </i-select>
           </Form-item>
 
-          <!-- 商品名称 -->
-          <Form-item prop="name" label="商品名称">
+          <!-- 商品ID -->
+          <Form-item prop="name" label="商品名称(精确查询)">
               <i-select v-model="goodsParam.goods_id" placeholder="请选择商品" filterable remote :remote-method="getGoods" @focus="getGoods()" clearable>
                 <i-option v-for="item in this.goodsSuggest" :key="item.id" :label="item.name" :value="item.id"></i-option>
               </i-select>
+          </Form-item>
+
+           <!-- 商品名称 -->
+          <Form-item prop="name" label="商品名称(模糊查询)">
+            <i-input type="text" v-model="goodsParam.name" placeholder="请输入部分商品名称"></i-input>
+          </Form-item>
+
+          <Form-item prop="brand" label="品牌">
+            <i-input type="text" v-model="goodsParam.brand" placeholder="请输入部分商品品牌"></i-input>
           </Form-item>
           <i-button @click="handleReset" size="default" style="float: right">重置</i-button>
           <i-button @click="handleSelect" type="primary" size="default" style="margin:0 30px;float: right;">查询</i-button>
@@ -240,7 +249,9 @@ export default {
         page: 1,
         perpage: 20,
         category_id: 0,
-        goods_id: 0
+        goods_id: 0,
+        name: '',
+        brand: ''
       },
       // 单位列表
       unitItem: [],
@@ -397,6 +408,8 @@ export default {
       this.goodsParam.goods_id = 0
       this.goodsParam.page = 1
       this.goodsParam.perpage = 20
+      this.goodsParam.name = ''
+      this.goodsParam.brand = ''
     }
   }
 }

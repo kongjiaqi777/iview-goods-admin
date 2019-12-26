@@ -21,12 +21,15 @@ class HttpRequest {
   }
   getInsideConfig () {
     const config = {
-      baseURL: this.baseUrl,
-      Headers: {
-        'Authorization': getToken(),
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Headers': 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild'
-      }
+      baseURL: this.baseUrl
+      // Headers: {
+      //   'Authorization': 'Bearer ' + this.token
+      // }
+      // Headers['Authorization']: {
+      //   'Authorization': 'Bearer ' + getToken(),
+      //   'Content-Type': 'application/json'
+      //   // 'Access-Control-Allow-Headers': 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild'
+      // }
     }
     return config
   }
@@ -39,6 +42,12 @@ class HttpRequest {
   interceptors (instance, url) {
     // 请求拦截
     instance.interceptors.request.use(config => {
+      let token = getToken()
+
+      if (token) {
+        token = 'bearer' + ' ' + token.replace(/'|"/g, '') // 把token加入到默认请求参数中
+        config.Headers.common['Authorization'] = token
+      }
       // 添加全局的loading...
       if (!Object.keys(this.queue).length) {
         // Spin.show() // 不建议开启，因为界面不友好

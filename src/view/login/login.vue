@@ -36,7 +36,11 @@ export default {
       'getUserInfo'
     ]),
     handleSubmit ({ userName, password }) {
-      this.$store.dispatch('LoginByUsername', this.loginForm).then(() => {
+      let loginForm = {
+        'phone': userName,
+        'password': password
+      }
+      this.$store.dispatch('LoginByUsername', loginForm).then(() => {
         this.$router.push({ path: '/home' }) // 登录成功之后重定向到首页
       }).catch(err => {
         this.$message.error(err) // 登录失败提示错误

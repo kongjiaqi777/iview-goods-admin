@@ -11,6 +11,7 @@ import {
 } from '@/api/user'
 import { setToken, getToken } from '@/libs/util'
 import { Message } from 'iview'
+import Cookies from 'js-cookie'
 
 export default {
   state: {
@@ -79,10 +80,13 @@ export default {
       return new Promise((resolve, reject) => {
         login(userInfo).then(response => {
           const data = response.data
-          console.log(data)
-          // Cookies.set('Token', response.data.token) //登录成功后将token存储在cookie之中
-          commit('setToken', data.token)
-          resolve()
+          if (data.code === 0) {
+            Cookies.set('Token', data.info.token)
+            commit('setToken', data.info.token)
+            console.log(getToken)
+            resolve()
+          }
+          // Cookies.set('Token', data.token)
         }).catch(error => {
           reject(error)
         })
@@ -134,8 +138,9 @@ export default {
           // _this.userToken = 'Bearer ' + res.data.data.body.token;
           // 将用户token保存到vuex中
           // _this.changeLogin({ Authorization: _this.userToken });
-          let userToken = 'Bearer ' + state.token
-          getUserInfo({ 'Authorization': userToken }).then(res => {
+          // let userToken = 'Bearer ' + state.token
+          // { 'Authorization': userToken }
+          getUserInfo().then(res => {
             if (res.data.code === 0) {
               const data = res.data
               commit('setAvatar', data.avatar)
