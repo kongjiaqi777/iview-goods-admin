@@ -8,15 +8,7 @@
       <Card icon="log-in" title="欢迎登录" :bordered="false">
         <div class="form-con">
           <login-form @on-success-valid="handleSubmit"></login-form>
-          <!-- <i-form ref="" :model="" :rules="">
-              <Form-item prop="userName" label="用户昵称">
-              </Form-item>
-
-              <Form-item prop="password">
-
-              </Form-item>
-          </i-form> -->
-          <p class="login-tip">输入任意用户名和密码即可</p>
+          <p class="login-tip">输入用户名和密码</p>
         </div>
       </Card>
     </div>
@@ -24,6 +16,7 @@
 </template>
 
 <script>
+import { Message } from 'iview'
 import LoginForm from '_c/login-form'
 import { mapActions } from 'vuex'
 export default {
@@ -32,8 +25,7 @@ export default {
   },
   methods: {
     ...mapActions([
-      'handleSubmit',
-      'getUserInfo'
+      'handleSubmit'
     ]),
     handleSubmit ({ userName, password }) {
       let loginForm = {
@@ -43,15 +35,8 @@ export default {
       this.$store.dispatch('LoginByUsername', loginForm).then(() => {
         this.$router.push({ path: '/home' }) // 登录成功之后重定向到首页
       }).catch(err => {
-        this.$message.error(err) // 登录失败提示错误
+        Message.info(err) // 登录失败提示错误
       })
-      // this.handleLogin({ userName, password }).then(res => {
-      //   this.getUserInfo().then(res => {
-      //     this.$router.push({
-      //       name: this.$config.homeName
-      //     })
-      //   })
-      // })
     }
   }
 }

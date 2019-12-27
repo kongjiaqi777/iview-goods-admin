@@ -11,7 +11,6 @@ import {
 } from '@/api/user'
 import { setToken, getToken } from '@/libs/util'
 import { Message } from 'iview'
-import Cookies from 'js-cookie'
 
 export default {
   state: {
@@ -80,73 +79,46 @@ export default {
       return new Promise((resolve, reject) => {
         login(userInfo).then(response => {
           const data = response.data
+          console.log(data)
           if (data.code === 0) {
-            Cookies.set('Token', data.info.token)
+            Message.info('登录成功!')
             commit('setToken', data.info.token)
-            console.log(getToken)
             resolve()
+          } else {
+            Message.info(data.msg)
+            reject()
           }
-          // Cookies.set('Token', data.token)
         }).catch(error => {
           reject(error)
         })
       })
     },
-    // handleLogin ({ commit }, { userName, password }) {
-    //   // userName = userName.trim()
-    //   return new Promise((resolve, reject) => {
-    //     const info = {
-    //       'phone': userName,
-    //       'password': password
-    //     }
-    //     login(info).then(res => {
-    //       const data = res.data
-    //       if (data.code === 0) {
-    //         Message.info('登录成功!')
-    //         commit('setToken', data.info.token)
-    //         resolve()
-    //       } else {
-    //         Message.info(data.msg)
-    //       }
-    //     }).catch(err => {
-    //       reject(err)
-    //     })
-    //   })
-    // },
     // 退出登录
     handleLogOut ({ state, commit }) {
       return new Promise((resolve, reject) => {
         logout(state.token).then(() => {
           commit('setToken', '')
           commit('setAccess', [])
-          Message.info('推出登录成功')
+          Message.info('退出登录成功')
           resolve()
         }).catch(err => {
           reject(err)
         })
-        // 如果你的退出登录无需请求接口，则可以直接使用下面三行代码而无需使用logout调用接口
-        // commit('setToken', '')
-        // commit('setAccess', [])
-        // resolve()
       })
     },
     // 获取用户相关信息
-    getUserInfo ({ state, commit }) {
+    getUserInfo ({ commit }) {
+      console.log('getUserInfo')
       return new Promise((resolve, reject) => {
-        console.log(state.token)
         try {
-          // _this.userToken = 'Bearer ' + res.data.data.body.token;
-          // 将用户token保存到vuex中
-          // _this.changeLogin({ Authorization: _this.userToken });
-          // let userToken = 'Bearer ' + state.token
-          // { 'Authorization': userToken }
           getUserInfo().then(res => {
+            console.log(res)
             if (res.data.code === 0) {
               const data = res.data
               commit('setAvatar', data.avatar)
               commit('setUserName', data.name)
               commit('setUserId', data.id)
-              commit('setAccess', ['super_admin']) // data.access
+              commit('setAccess', ['super_admin'])
               commit('setHasGetInfo', true)
               resolve(data)
             } else {

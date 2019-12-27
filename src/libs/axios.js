@@ -19,17 +19,16 @@ class HttpRequest {
     this.baseUrl = baseUrl
     this.queue = {}
   }
-  getInsideConfig () {
+  getInsideConfig (url) {
     const config = {
       baseURL: this.baseUrl
       // Headers: {
       //   'Authorization': 'Bearer ' + this.token
-      // }
-      // Headers['Authorization']: {
-      //   'Authorization': 'Bearer ' + getToken(),
       //   'Content-Type': 'application/json'
-      //   // 'Access-Control-Allow-Headers': 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild'
       // }
+    }
+    if (url !== 'login') {
+      config.headers['Authorization'] = 'Bearer' + ' ' + getToken()
     }
     return config
   }
@@ -42,12 +41,6 @@ class HttpRequest {
   interceptors (instance, url) {
     // 请求拦截
     instance.interceptors.request.use(config => {
-      let token = getToken()
-
-      if (token) {
-        token = 'bearer' + ' ' + token.replace(/'|"/g, '') // 把token加入到默认请求参数中
-        config.Headers.common['Authorization'] = token
-      }
       // 添加全局的loading...
       if (!Object.keys(this.queue).length) {
         // Spin.show() // 不建议开启，因为界面不友好
@@ -81,7 +74,7 @@ class HttpRequest {
   }
   request (options) {
     const instance = axios.create()
-    options = Object.assign(this.getInsideConfig(), options)
+    options = Object.assign(this.getInsideConfig(options.url), options)
     this.interceptors(instance, options.url)
     return instance(options)
   }
