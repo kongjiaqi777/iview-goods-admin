@@ -21,11 +21,11 @@ class HttpRequest {
   }
   getInsideConfig (url) {
     const config = {
-      baseURL: this.baseUrl
-      // Headers: {
-      //   'Authorization': 'Bearer ' + this.token
-      //   'Content-Type': 'application/json'
-      // }
+      baseURL: this.baseUrl,
+      Headers: {
+        'Authorization': 'Bearer ' + getToken(),
+        'Content-Type': 'application/json'
+      }
     }
     if (url !== 'login') {
       config.headers['Authorization'] = 'Bearer' + ' ' + getToken()

@@ -86,7 +86,7 @@ export default {
             resolve()
           } else {
             Message.info(data.msg)
-            reject()
+            reject(data.msg)
           }
         }).catch(error => {
           reject(error)
